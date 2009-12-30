@@ -37,7 +37,7 @@ function hs4wp_prepare_footer() {
         $hs_graphics_uri = str_ireplace("http://".$_SERVER['HTTP_HOST'],"",$hs_graphics_uri);
         $hs_script_uri   = str_ireplace("http://".$_SERVER['HTTP_HOST'],"",$hs_script_uri);
     }
-    $OUT = "<!-- HighSlide4Wordpress 1 -->\n";
+    $OUT = "<!-- HighSlide4Wordpress -->\n";
     $OUT .= '<script type="text/javascript" src="'.$hs_script_uri.'"></script>';
     $OUT .= '<script type="text/javascript">'."\n";
     $OUT .= "hs.graphicsDir = '".$hs_graphics_uri."';\n";
@@ -189,7 +189,7 @@ function hs4wp_auto_set($content) {
     // Add HS to Images.
 	    $content = preg_replace_callback('/<a ([^>]+)>/i', 'hs4wp_callback_img', $content);
     // Add HS to HTML Tags if present
-    if(stristr($content,"[highslide") AND stristr($content,"[/highslide]")) {
+    if(stristr($content,"[highslide]") AND stristr($content,"[/highslide]")) {
        $content = preg_replace_callback('#\[highslide]((?:[^\[]|\[(?!/?highslide])|(?R))+)\[/highslide]#', 'hs4wp_callback_htm', $content);
     }
     return $content;

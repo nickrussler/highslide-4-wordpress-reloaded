@@ -15,20 +15,23 @@ function hs4wp_options_page()
    			$credits            =(!isset($_POST['credits'])? '': $_POST['credits']);
             $fadeinout          =(!isset($_POST['fadeinout'])? '': $_POST['fadeinout']);
             $attachment_filter  =(!isset($_POST['attachment_filter'])? '': $_POST['attachment_filter']);
+            $only_use_header    =(!isset($_POST['only_use_header'])? '': $_POST['only_use_header']);
             $select1            =(!isset($_POST['select1'])? '': intval($_POST['select1']));
             $select2            =(!isset($_POST['select2'])? '': intval($_POST['select2']));
             $select3            =(!isset($_POST['select3'])? '': intval($_POST['select3']));
             $textarea1          =(!isset($_POST['textarea1'])? '': stripslashes($_POST['textarea1']));
+            // Check boxes
             update_option('hs4wp_lic_agreement', $lic_agreement);
 			update_option('hs4wp_coralize', $coralize);
 			update_option('hs4wp_credits', $credits);
 			update_option('hs4wp_fadeinout', $fadeinout);
             update_option('hs4wp_attachment_filter', $attachment_filter);
+            update_option('hs4wp_only_use_header', $only_use_header);
+            // Selects
             update_option('hs4wp_hs_appearance', $select1);
             update_option('hs4wp_hs_dimming', $select2);
             update_option('hs4wp_hs_caption', $select3);
             update_option('hs4wp_advanced', $textarea1);
-
 
 			$msg_status = 'Options saved.';
 		    // Show message
@@ -41,8 +44,8 @@ function hs4wp_options_page()
         $credits            =( get_option('hs4wp_credits')=='on' ) ? "checked":"";
         $fadeinout          =( get_option('hs4wp_fadeinout')=='on' ) ? "checked":"";
         $attachment_filter  =( get_option('hs4wp_attachment_filter')=='on' ) ? "checked":"";
-
-        $textarea1      =  get_option('hs4wp_advanced');
+        $only_use_header    =( get_option('hs4wp_only_use_header')=='on' ) ? "checked":"";
+        $textarea1          =  get_option('hs4wp_advanced');
     // Configuration Page
         $imgpath = $hs4wp_plugin_uri."img/";
         // License red
@@ -154,6 +157,11 @@ function hs4wp_options_page()
                             <span style="color:red">Attention!</span>&nbsp;Insert only valid JS code, else it can break the plugin functionality.
                             If you have no clue what HS Parameters are just leave this textbox empty.
                             <textarea name="textarea1" cols="75" rows="5">$textarea1</textarea>
+                            <div>
+                                <input id="check5" type="checkbox" name="only_use_header" $only_use_header />
+                                <label for="check5">Force Include of JS Code into Page Header instead of Footer.<br/>
+                                <small>(Some non API conform Themes require JS loads in the header)</small></label>
+                            </div>
                             <div class="submit"><input type="submit" name="Submit" value="Update options" /></div>
             			</form>
             		</div>
