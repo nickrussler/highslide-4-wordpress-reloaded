@@ -209,18 +209,19 @@ function hs4wp_auto_set($content) {
  * @return string
  */
 function hs4wp_callback_htm($a) {
-    global $post;
+    global $post,$hs4wp_plugin_uri;
     $str = trim($a[1]);
     $contentID = $post->ID.md5($str);
     // get heading
     $subject = preg_match('#\((.*);(.*)\)#',$str,$reg)?$reg[1]:false;
     $OUT = '<a class="highslide" onclick="return hs.htmlExpand(this, {wrapperClassName: \'draggable-header\',contentId: \'highslide-html_'.$contentID.'\'';
+    $img = (get_option('hs4wp_ext_icon') == 'on')?'<img src="'.$hs4wp_plugin_uri.'img/ext.png" width="11" height="9" border="0" alt="popup" style="border:none;">':'';
     if($subject != false) {
       $OUT .= ",headingText:'".htmlentities2($subject)."'";
-      $OUT .= '} )" href="#">'.htmlentities2($reg[2]).'</a>';
+      $OUT .= '} )" href="#">'.$img.htmlentities2($reg[2]).'</a>';
       $str = str_replace($reg[0],"",$str);
     } else {
-      $OUT .= '} )" href="#">info</a>';
+      $OUT .= '} )" href="#">'.$img.'info</a>';
     }
     $OUT .= "\n";
     // opener

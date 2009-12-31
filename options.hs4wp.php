@@ -17,6 +17,7 @@ function hs4wp_options_page()
             $attachment_filter  =(!isset($_POST['attachment_filter'])? '': $_POST['attachment_filter']);
             $only_use_header    =(!isset($_POST['only_use_header'])? '': $_POST['only_use_header']);
             $align_center       =(!isset($_POST['align_center'])? '': $_POST['align_center']);
+            $ext_icon           =(!isset($_POST['ext_icon'])? '': $_POST['ext_icon']);
             $input1             =(!isset($_POST['input1'])? 5: intval($_POST['input1']));
             $input2             =(!isset($_POST['input2'])? '': $_POST['input2']);
             $select1            =(!isset($_POST['select1'])? '': intval($_POST['select1']));
@@ -31,6 +32,8 @@ function hs4wp_options_page()
             update_option('hs4wp_attachment_filter', $attachment_filter);
             update_option('hs4wp_only_use_header', $only_use_header);
             update_option('hs4wp_align_center', $align_center);
+            update_option('hs4wp_ext_icon', $ext_icon);
+
 
             // Input
             update_option('hs4wp_slideshow_delay', $input1);
@@ -55,6 +58,7 @@ function hs4wp_options_page()
         $attachment_filter  =( get_option('hs4wp_attachment_filter')=='on' ) ? "checked":"";
         $only_use_header    =( get_option('hs4wp_only_use_header')=='on' ) ? "checked":"";
         $align_center       =( get_option('hs4wp_align_center')=='on' ) ? "checked":"";
+        $ext_icon           =( get_option('hs4wp_ext_icon')=='on' ) ? "checked":"";
 
         $slideshow_delay    =  get_option('hs4wp_slideshow_delay');
         $custom_css         =  get_option('hs4wp_custom_css');
@@ -152,6 +156,11 @@ function hs4wp_options_page()
                                 <input id="check5" type="checkbox" name="align_center" $align_center />
                                 <label for="check5">Align expanded images to center ?</label>
                             </div>
+                            <div>
+                                <input id="check6" type="checkbox" name="ext_icon" $ext_icon />
+                                <label for="check6">Add ext. Icon to [highslide]*[/highslide] Links ?</label>
+                            </div>
+
                             <br/>
                             <div>
                                 <label for="input1">Slideshow Delay in seconds ?</label>
