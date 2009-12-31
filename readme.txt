@@ -1,7 +1,7 @@
 === Highslide 4 Wordpress *reloaded* ===
 Contributors: solariz
-Donate link: http://solariz.de/
-Tags: images, highslide, lightbox, popup
+Donate link: http://solariz.de/donate
+Tags: images, highslide, lightbox, popup, image, slideshow
 Requires at least: 2.0.2
 Tested up to: 2.9
 Stable tag: 1.0

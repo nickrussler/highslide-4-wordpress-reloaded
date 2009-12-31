@@ -9,8 +9,9 @@
  */
 function hs4wp_prepare_header() {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs;
+    $custom_css = get_option('hs4wp_custom_css');
+    $hs_css_uri = (strlen($custom_css)>=5)?$custom_css."?ver=".$hs4wp_ver_hs:$hs4wp_plugin_uri."highslide.css?ver=".$hs4wp_ver_hs;
     $coralize= get_option('hs4wp_coralize');
-    $hs_css_uri = $hs4wp_plugin_uri."highslide.css?ver=".$hs4wp_ver_hs;
     if($coralize != "" && $coralize != false) {
         $hs_css_uri = hs4wp_coralize_uri($hs_css_uri);
     }
