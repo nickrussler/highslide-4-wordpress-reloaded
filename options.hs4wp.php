@@ -17,6 +17,7 @@ function hs4wp_options_page()
             $attachment_filter  =(!isset($_POST['attachment_filter'])? '': $_POST['attachment_filter']);
             $only_use_header    =(!isset($_POST['only_use_header'])? '': $_POST['only_use_header']);
             $align_center       =(!isset($_POST['align_center'])? '': $_POST['align_center']);
+            $input1             =(!isset($_POST['input1'])? 5: intval($_POST['input1']));
             $select1            =(!isset($_POST['select1'])? '': intval($_POST['select1']));
             $select2            =(!isset($_POST['select2'])? '': intval($_POST['select2']));
             $select3            =(!isset($_POST['select3'])? '': intval($_POST['select3']));
@@ -29,6 +30,9 @@ function hs4wp_options_page()
             update_option('hs4wp_attachment_filter', $attachment_filter);
             update_option('hs4wp_only_use_header', $only_use_header);
             update_option('hs4wp_align_center', $align_center);
+
+            // Input
+            update_option('hs4wp_slideshow_delay', $input1);
 
             // Selects
             update_option('hs4wp_hs_appearance', $select1);
@@ -50,7 +54,11 @@ function hs4wp_options_page()
         $only_use_header    =( get_option('hs4wp_only_use_header')=='on' ) ? "checked":"";
         $align_center       =( get_option('hs4wp_align_center')=='on' ) ? "checked":"";
 
+        $slideshow_delay    =  get_option('hs4wp_slideshow_delay');
         $textarea1          =  get_option('hs4wp_advanced');
+    // Defaults
+        if(!$slideshow_delay) $slideshow_delay = 5;
+
     // Configuration Page
         $imgpath = $hs4wp_plugin_uri."img/";
         // License red
@@ -142,6 +150,10 @@ function hs4wp_options_page()
                                 <label for="check5">Align expanded images to center ?</label>
                             </div>
                             <br/>
+                            <div>
+                                <label for="input1">Slideshow Delay in seconds ?</label>
+                                <input id="input1" type="text" size="2" name="input1" value="$slideshow_delay" />
+                            </div>
                             <div>
                                 <label for="select1">HS Appearance</label>
                                 <select id="select1" name="select1">

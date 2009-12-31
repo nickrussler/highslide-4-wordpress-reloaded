@@ -134,7 +134,9 @@ function hs4wp_prepare_footer() {
 	// Add the controlbar
     if($hs4wp_img_count > 1) {
       $OUT .= "if (hs.addSlideshow) hs.addSlideshow({\n";
-      $OUT .= "\tinterval: 5000,\n";
+      $interval = intval(get_option('hs4wp_slideshow_delay')*1000);
+      if($interval < 1000) $interval = 5000;
+      $OUT .= "\tinterval: ".$interval.",\n";
       $OUT .= "\trepeat: false,\n";
       $OUT .= "\tuseControls: true,\n";
       $OUT .= "\tfixedControls: 'fit',\n";
