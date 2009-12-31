@@ -8,9 +8,9 @@
  * @return bool
  */
 function hs4wp_prepare_header() {
-    GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs;
+    GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_ver_plugin;
     $custom_css = get_option('hs4wp_custom_css');
-    $hs_css_uri = (strlen($custom_css)>=5)?$custom_css."?ver=".$hs4wp_ver_hs:$hs4wp_plugin_uri."highslide.css?ver=".$hs4wp_ver_hs;
+    $hs_css_uri = (strlen($custom_css)>=5)?$custom_css."?ver=".$hs4wp_ver_hs."&v=".$hs4wp_ver_plugin:$hs4wp_plugin_uri."highslide.css?ver=".$hs4wp_ver_hs."&v=".$hs4wp_ver_plugin;
     $coralize= get_option('hs4wp_coralize');
     if($coralize != "" && $coralize != false) {
         $hs_css_uri = hs4wp_coralize_uri($hs_css_uri);
@@ -27,9 +27,9 @@ function hs4wp_prepare_header() {
  * @return bool
  */
 function hs4wp_prepare_footer() {
-    GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_img_count;
+    GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_ver_plugin,$hs4wp_img_count;
     $coralize= get_option('hs4wp_coralize');
-    $hs_script_uri = $hs4wp_plugin_uri."hs-custom-min.js?ver=".$hs4wp_ver_hs;
+    $hs_script_uri = $hs4wp_plugin_uri."hs-custom-min.js?ver=".$hs4wp_ver_hs."&v=".$hs4wp_ver_plugin;
     $hs_graphics_uri = $hs4wp_plugin_uri."graphics/";
     if($coralize != "" && $coralize != false) {
         $hs_script_uri      = hs4wp_coralize_uri($hs_script_uri);
