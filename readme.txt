@@ -4,7 +4,7 @@ Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow
 Requires at least: 2.0.2
 Tested up to: 2.9
-Stable tag: 1.0
+Stable tag: 1.01
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
 
@@ -57,6 +57,16 @@ You can find a small Forum related to my Plugins at http://solariz.de feel free 
 4. choose many styles or set your own in Advanced
 
 == Changelog ==
+
+= 1.01 =
+* Addet Option to Force to “only use header” for JS include. Some themes have problems with footer included JS files. reported by Max
+* Fix in [highslide] detection
+* Include positioning in JS
+* Option for highslide to automaticaly align center
+* Option to specify Slideshow delay
+* Changed some informative links (donate, homepage)
+* Adv. use custom Highslide CSS File
+* Display ICO Gfx on HTML Expand links
 
 = 1.0 =
 * init, first release
