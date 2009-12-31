@@ -16,6 +16,7 @@ function hs4wp_options_page()
             $fadeinout          =(!isset($_POST['fadeinout'])? '': $_POST['fadeinout']);
             $attachment_filter  =(!isset($_POST['attachment_filter'])? '': $_POST['attachment_filter']);
             $only_use_header    =(!isset($_POST['only_use_header'])? '': $_POST['only_use_header']);
+            $align_center       =(!isset($_POST['align_center'])? '': $_POST['align_center']);
             $select1            =(!isset($_POST['select1'])? '': intval($_POST['select1']));
             $select2            =(!isset($_POST['select2'])? '': intval($_POST['select2']));
             $select3            =(!isset($_POST['select3'])? '': intval($_POST['select3']));
@@ -27,6 +28,8 @@ function hs4wp_options_page()
 			update_option('hs4wp_fadeinout', $fadeinout);
             update_option('hs4wp_attachment_filter', $attachment_filter);
             update_option('hs4wp_only_use_header', $only_use_header);
+            update_option('hs4wp_align_center', $align_center);
+
             // Selects
             update_option('hs4wp_hs_appearance', $select1);
             update_option('hs4wp_hs_dimming', $select2);
@@ -45,6 +48,8 @@ function hs4wp_options_page()
         $fadeinout          =( get_option('hs4wp_fadeinout')=='on' ) ? "checked":"";
         $attachment_filter  =( get_option('hs4wp_attachment_filter')=='on' ) ? "checked":"";
         $only_use_header    =( get_option('hs4wp_only_use_header')=='on' ) ? "checked":"";
+        $align_center       =( get_option('hs4wp_align_center')=='on' ) ? "checked":"";
+
         $textarea1          =  get_option('hs4wp_advanced');
     // Configuration Page
         $imgpath = $hs4wp_plugin_uri."img/";
@@ -132,6 +137,11 @@ function hs4wp_options_page()
                                 <input id="check4" type="checkbox" name="attachment_filter" $attachment_filter />
                                 <label for="check4">Disable  Highslide on Attachment Images ?</label>
                             </div>
+                            <div>
+                                <input id="check5" type="checkbox" name="align_center" $align_center />
+                                <label for="check5">Align expanded images to center ?</label>
+                            </div>
+                            <br/>
                             <div>
                                 <label for="select1">HS Appearance</label>
                                 <select id="select1" name="select1">

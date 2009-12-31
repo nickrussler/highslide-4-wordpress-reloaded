@@ -41,10 +41,11 @@ function hs4wp_prepare_footer() {
     $OUT .= '<script type="text/javascript" src="'.$hs_script_uri.'"></script>';
     $OUT .= '<script type="text/javascript">'."\n";
     $OUT .= "hs.graphicsDir = '".$hs_graphics_uri."';\n";
-    $OUT .= "hs.align = 'center';\n";
     $OUT .= (get_option('hs4wp_credits')!="on")?"hs.showCredits = true;\n":"hs.showCredits = false;\n";
     $OUT .= (get_option('hs4wp_fadeinout')=="on")?"hs.fadeInOut = true;\nhs.transitions = ['expand', 'crossfade'];\n":"hs.fadeInOut = false;\n";
+    $OUT .= (get_option('hs4wp_align_center')=="on")?"hs.align = 'center';\n":"";
     $OUT .= "hs.padToMinWidth = true;\n";
+
     // Caption Mode
     switch(get_option('hs4wp_hs_caption')) {
         CASE 1:
