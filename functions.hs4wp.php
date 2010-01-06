@@ -191,11 +191,13 @@ function hs4wp_coralize_uri($uri) {
 function hs4wp_auto_set($content) {
 	global $post,$hs4wp_load_hs;
     // Add HS to Images.
-	    $content = preg_replace_callback('/<a ([^>]+)>/i', 'hs4wp_callback_img', $content);
+	   $content = preg_replace_callback('/<a ([^>]+)>/i', 'hs4wp_callback_img', $content);
     // Add HS to HTML Tags if present
+    /*
     if(stristr($content,"[highslide]") AND stristr($content,"[/highslide]")) {
        $content = preg_replace_callback('#\[highslide]((?:[^\[]|\[(?!/?highslide])|(?R))+)\[/highslide]#', 'hs4wp_callback_htm', $content);
     }
+    */
     return $content;
 }
 
@@ -247,7 +249,7 @@ function hs4wp_callback_htm($a) {
 /**
  * function hs4wp_callback_img
  * Callback Function of hs4wp_auto_set
- * @version 1.0
+ * @version 1.01
  * @see hs4wp_auto_set
  * @param string preg
  * @author Marco 'solariz' Goetze
@@ -258,33 +260,30 @@ function hs4wp_callback_img($a) {
 	$str = $a[1];
     // Standard replace for linked images
 	if ( preg_match('/href=[\'"][^"\']+\.(?:gif|jpe|jpg|jpeg|png)/i', $str) ) {
-        ++$hs4wp_img_count;
-		if ( false !== strpos(strtolower($str), 'class=') )
-			return '<a ' . preg_replace('/(class=[\'"])/i', '$1highslide', $str) . ' onclick="return hs.expand(this)">';
-		else
-			return '<a class="highslide img_'.$hs4wp_img_count.'" ' . $str . ' onclick="return hs.expand(this)">';
+	    if(stripos($str,"highslide") == false && stripos($str,"onclick") == false && is_attachment() == false) {
+            ++$hs4wp_img_count;
+		    if ( false !== strpos(strtolower($str), 'class=') )
+			    return '<a ' . preg_replace('/(class=[\'"])/i', '$1highslide', $str) . ' onclick="return hs.expand(this)">';
+		    else
+    			return '<a class="highslide img_'.$hs4wp_img_count.'" ' . $str . ' onclick="return hs.expand(this)">';
+        }
 	}
-
-    //elseif ( preg_match('/href=[\'"][^"\']+\?attachment\_id=[0-9]*/i', $str) ) {
-    // Special Replace for Wordpress 2.9+ Gallerys
-    // <a href='http://homeserver/wordpress/?attachment_id=3' title='DSC03835'>
-    // <a href="http://homeserver/wordpress/wp-content/uploads/2009/12/DSC03835.jpg">
-        //TODO: Handler to pick original img
-	//}
     return $a[0];
-
 }
 
 /**
  * function hs4wp_auto_set_attachmentURL
  * Function containing STRING to add on found href img
- * @version 1.0
+ * @version 1.01
  * @param string $url
  * @author Marco 'solariz' Goetze
  * @return string
  */
 function hs4wp_auto_set_attachmentURL($url) {
-    $url = $url.'" class="highslide" onclick="return hs.expand(this)';
+    // chek if URL already contain highslide parts
+    if(stripos($url,"highslide") == false && stripos($url,"onclick") == false && is_attachment() == true) {
+        $url = $url.'" class="highslide" onclick="return hs.expand(this)';
+    }
     return $url;
 }
 

@@ -3,7 +3,7 @@
 Plugin Name: Highslide for Wordpress *reloaded*
 Plugin URI: http://solariz.de/highslide4wordpress/
 Description: Add configurable "Highslide JS" Support to your Wordpress Installation, including Auto Image linking.
-Version: 1.10
+Version: 1.11
 Author: Marco Goetze
 Author URI: http://solariz.de/
 
@@ -29,7 +29,7 @@ Released under a Creative Commons Attribution-NonCommercial 2.5 License.
 // WP Actions & Filter
     if(get_option('hs4wp_lic_agreement') == "on") {
       add_filter('the_content', 'hs4wp_auto_set', 60);
-      if(get_option('hs4wp_attachment_filter')!="on") add_filter('wp_get_attachment_url', 'hs4wp_auto_set_attachmentURL');
+      if(get_option('hs4wp_attachment_filter')!="on") add_filter('wp_get_attachment_url', 'hs4wp_auto_set_attachmentURL',61);
       add_action('wp_head', 'hs4wp_prepare_header');
       // Workaround, some themes using strange wp_footer behaviors
       // reported 30. Dec. by Max

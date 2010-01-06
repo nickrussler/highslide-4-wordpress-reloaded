@@ -1,9 +1,9 @@
 === Highslide 4 Wordpress *reloaded* ===
 Contributors: solariz
 Donate link: http://solariz.de/donate
-Tags: images, highslide, lightbox, popup, image, slideshow
+Tags: images, highslide, lightbox, popup, image, slideshow, zoom
 Requires at least: 2.0.2
-Tested up to: 2.9
+Tested up to: 2.9.1
 Stable tag: 1.10
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
