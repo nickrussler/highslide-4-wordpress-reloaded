@@ -214,8 +214,13 @@ function hs4wp_callback_htm($a) {
     $contentID = $post->ID.md5($str);
     // get options
     $options  = preg_match('#\((.*)\)#',$str,$reg)?explode(";",$reg[1],4):false;
-    $subject  = $options[0];
-    $linkName = $options[1];
+    if(isset($options[1])&&isset($options[2])) {
+        $subject  = $options[0];
+        $linkName = $options[1];
+    } else {
+        $subject  = false;
+        $linkName = false;
+    }
     $width    = intval($options[2]);
     $height   = intval($options[3]);
     if($width > 1 && $height > 1)
@@ -227,10 +232,10 @@ function hs4wp_callback_htm($a) {
     $img = (get_option('hs4wp_ext_icon') == 'on')?'<img src="'.$hs4wp_plugin_uri.'img/ext.png" width="11" height="9" border="0" alt="" style="border:none;">':'';
     if($subject != false) {
       $OUT .= ",headingText:'".htmlentities2($subject)."'";
-      $OUT .= '} )" href="#">'.$img.htmlentities2($linkName).'</a>';
+      $OUT .= '} )" href="#">'.$img." ".htmlentities2($linkName).'</a>';
       $str = str_replace($reg[0],"",$str);
     } else {
-      $OUT .= '} )" href="#">'.$img.'info</a>';
+      $OUT .= '} )" href="#">'.$img.' info</a>';
     }
     $OUT .= "\n";
     // opener
