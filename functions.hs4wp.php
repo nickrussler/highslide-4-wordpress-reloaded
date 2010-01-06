@@ -10,7 +10,7 @@
 function hs4wp_prepare_header() {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_ver_plugin;
     $custom_css = get_option('hs4wp_custom_css');
-    $hs_css_uri = (strlen($custom_css)>=5)?$custom_css."?ver=".$hs4wp_ver_hs."&v=".$hs4wp_ver_plugin:$hs4wp_plugin_uri."highslide.css?ver=".$hs4wp_ver_hs."&v=".$hs4wp_ver_plugin;
+    $hs_css_uri = (strlen($custom_css)>=5)?$custom_css."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin:$hs4wp_plugin_uri."highslide.css?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
     $coralize= get_option('hs4wp_coralize');
     if($coralize != "" && $coralize != false) {
         $hs_css_uri = hs4wp_coralize_uri($hs_css_uri);
@@ -29,7 +29,7 @@ function hs4wp_prepare_header() {
 function hs4wp_prepare_footer() {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_ver_plugin,$hs4wp_img_count;
     $coralize= get_option('hs4wp_coralize');
-    $hs_script_uri = $hs4wp_plugin_uri."hs-custom-min.js?ver=".$hs4wp_ver_hs."&v=".$hs4wp_ver_plugin;
+    $hs_script_uri = $hs4wp_plugin_uri."hs-custom-min.js?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
     $hs_graphics_uri = $hs4wp_plugin_uri."graphics/";
     if($coralize != "" && $coralize != false) {
         $hs_script_uri      = hs4wp_coralize_uri($hs_script_uri);
@@ -193,18 +193,16 @@ function hs4wp_auto_set($content) {
     // Add HS to Images.
 	   $content = preg_replace_callback('/<a ([^>]+)>/i', 'hs4wp_callback_img', $content);
     // Add HS to HTML Tags if present
-    /*
     if(stristr($content,"[highslide]") AND stristr($content,"[/highslide]")) {
        $content = preg_replace_callback('#\[highslide]((?:[^\[]|\[(?!/?highslide])|(?R))+)\[/highslide]#', 'hs4wp_callback_htm', $content);
     }
-    */
     return $content;
 }
 
 /**
  * function hs4wp_callback_htm
  * Callback Function of hs4wp_auto_set
- * @version 1.0
+ * @version 1.02
  * @see hs4wp_auto_set
  * @param string preg
  * @author Marco 'solariz' Goetze
@@ -214,20 +212,29 @@ function hs4wp_callback_htm($a) {
     global $post,$hs4wp_plugin_uri;
     $str = trim($a[1]);
     $contentID = $post->ID.md5($str);
-    // get heading
-    $subject = preg_match('#\((.*);(.*)\)#',$str,$reg)?$reg[1]:false;
+    // get options
+    $options  = preg_match('#\((.*)\)#',$str,$reg)?explode(";",$reg[1],4):false;
+    $subject  = $options[0];
+    $linkName = $options[1];
+    $width    = intval($options[2]);
+    $height   = intval($options[3]);
+    if($width > 1 && $height > 1)
+        $style = ' style="width:'.$width.'px;height:'.$height.'px;"';
+    else
+        $style = '';
+
     $OUT = '<a class="highslide" onclick="return hs.htmlExpand(this, {wrapperClassName: \'draggable-header\',contentId: \'highslide-html_'.$contentID.'\'';
-    $img = (get_option('hs4wp_ext_icon') == 'on')?'<img src="'.$hs4wp_plugin_uri.'img/ext.png" width="11" height="9" border="0" alt="popup" style="border:none;">':'';
+    $img = (get_option('hs4wp_ext_icon') == 'on')?'<img src="'.$hs4wp_plugin_uri.'img/ext.png" width="11" height="9" border="0" alt="" style="border:none;">':'';
     if($subject != false) {
       $OUT .= ",headingText:'".htmlentities2($subject)."'";
-      $OUT .= '} )" href="#">'.$img.htmlentities2($reg[2]).'</a>';
+      $OUT .= '} )" href="#">'.$img.htmlentities2($linkName).'</a>';
       $str = str_replace($reg[0],"",$str);
     } else {
       $OUT .= '} )" href="#">'.$img.'info</a>';
     }
     $OUT .= "\n";
     // opener
-    $OUT .= '<div id="highslide-html_'.$contentID.'" class="highslide-html-content">';
+    $OUT .= '<div id="highslide-html_'.$contentID.'" class="highslide-html-content"'.$style.'>';
     // HTML Box Header
 	$OUT .= '<div class="highslide-header">
                 <ul>
@@ -282,7 +289,7 @@ function hs4wp_callback_img($a) {
 function hs4wp_auto_set_attachmentURL($url) {
     // chek if URL already contain highslide parts
     if(stripos($url,"highslide") == false && stripos($url,"onclick") == false && is_attachment() == true) {
-        $url = $url.'" class="highslide" onclick="return hs.expand(this)';
+        $url = $url."\" class=\"highslide\" onclick=\"return hs.expand(this)";
     }
     return $url;
 }

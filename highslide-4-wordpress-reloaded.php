@@ -28,11 +28,11 @@ Released under a Creative Commons Attribution-NonCommercial 2.5 License.
     $hs4wp_img_count = 0;
 // WP Actions & Filter
     if(get_option('hs4wp_lic_agreement') == "on") {
-      add_filter('the_content', 'hs4wp_auto_set', 60);
+      add_filter('the_content', 'hs4wp_auto_set',60);
       if(get_option('hs4wp_attachment_filter')!="on") add_filter('wp_get_attachment_url', 'hs4wp_auto_set_attachmentURL',61);
       add_action('wp_head', 'hs4wp_prepare_header');
       // Workaround, some themes using strange wp_footer behaviors
-      // reported 30. Dec. by Max
+      // reported 30. Dec. by Max 
       if(get_option('hs4wp_only_use_header')=="on") add_action('wp_head', 'hs4wp_prepare_footer');
       else add_action('wp_footer', 'hs4wp_prepare_footer');
     }
