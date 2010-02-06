@@ -224,9 +224,9 @@ function hs4wp_callback_htm($a) {
     $width    = intval($options[2]);
     $height   = intval($options[3]);
     if($width > 1 && $height > 1)
-        $style = ' style="width:'.$width.'px;height:'.$height.'px;"';
+        $style = ' align="left" style="width:'.$width.'px;height:'.$height.'px;"';
     else
-        $style = '';
+        $style = ' align="left"';
 
     $OUT = '<a class="highslide" onclick="return hs.htmlExpand(this, {wrapperClassName: \'draggable-header\',contentId: \'highslide-html_'.$contentID.'\'';
     $img = (get_option('hs4wp_ext_icon') == 'on')?'<img src="'.$hs4wp_plugin_uri.'img/ext.png" width="11" height="9" border="0" alt="" style="border:none;">':'';
