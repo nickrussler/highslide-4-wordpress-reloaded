@@ -4,7 +4,7 @@ Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom
 Requires at least: 2.0.2
 Tested up to: 2.9.1
-Stable tag: 1.11
+Stable tag: 1.12
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
 
@@ -57,6 +57,10 @@ You can find a small Forum related to my Plugins at http://solariz.de feel free 
 4. choose many styles or set your own in Advanced
 
 == Changelog ==
+
+= 1.12 =
+* Bugfix: Highslide expands displays title and additional information correct, thanks to Tom
+* Bugfix: expands now align text left to right by default
 
 = 1.11 =
 * Bugfix: Highslide expands now as it should on integrated WP gallerys
