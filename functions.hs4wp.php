@@ -214,7 +214,7 @@ function hs4wp_callback_htm($a) {
     $contentID = $post->ID.md5($str);
     // get options
     $options  = preg_match('#\((.*)\)#',$str,$reg)?explode(";",$reg[1],4):false;
-    if(isset($options[1])&&isset($options[2])) {
+    if(isset($options[0])&&isset($options[1])) {
         $subject  = $options[0];
         $linkName = $options[1];
     } else {
