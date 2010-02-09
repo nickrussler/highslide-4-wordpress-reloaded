@@ -57,6 +57,8 @@ You can find a small Forum related to my Plugins at http://solariz.de feel free 
 4. choose many styles or set your own in Advanced
 
 == Changelog ==
+= 1.13 =
+* Version No. Change due to sucking Wordpres Version management ;( Changing a simple update on X different locations is a pain in my...
 
 = 1.12 =
 * Bugfix: Highslide expands displays title and additional information correct, thanks to Tom
