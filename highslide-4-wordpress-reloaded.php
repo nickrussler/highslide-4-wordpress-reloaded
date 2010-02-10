@@ -19,7 +19,7 @@ Released under a Creative Commons Attribution-NonCommercial 2.5 License.
 
 // Versions
     $hs4wp_ver_hs       = 418;
-    $hs4wp_ver_plugin   = 111;
+    $hs4wp_ver_plugin   = 113;
 
 // fixed set / requires
     $hs4wp_plugin_path = trailingslashit(ABSPATH.'wp-content/plugins/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__)));

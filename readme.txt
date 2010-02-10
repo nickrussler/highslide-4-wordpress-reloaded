@@ -4,7 +4,7 @@ Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom
 Requires at least: 2.0.2
 Tested up to: 2.9.1
-Stable tag: 1.12
+Stable tag: 1.13
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
 
@@ -71,7 +71,7 @@ You can find a small Forum related to my Plugins at http://solariz.de feel free 
 * New: HTML Expand Box description extended you can now manually specify the widht and hight. (Subject;LinkTitle;640;480) will open the windows in 640×480px
 
 = 1.10 =
-* Addet Option to Force to “only use header” for JS include. Some themes have problems with footer included JS files. reported by Max
+* Added Option to Force to “only use header” for JS include. Some themes have problems with footer included JS files. reported by Max
 * Fix in [highslide] detection
 * Include positioning in JS
 * Option for highslide to automaticaly align center
