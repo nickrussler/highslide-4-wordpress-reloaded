@@ -18,6 +18,8 @@ function hs4wp_options_page()
             $only_use_header    =(!isset($_POST['only_use_header'])? '': $_POST['only_use_header']);
             $align_center       =(!isset($_POST['align_center'])? '': $_POST['align_center']);
             $ext_icon           =(!isset($_POST['ext_icon'])? '': $_POST['ext_icon']);
+            $ptag_workaround    =(!isset($_POST['ptag_workaround'])? '': $_POST['ptag_workaround']);
+
             $input1             =(!isset($_POST['input1'])? 5: intval($_POST['input1']));
             $input2             =(!isset($_POST['input2'])? '': $_POST['input2']);
             $select1            =(!isset($_POST['select1'])? '': intval($_POST['select1']));
@@ -33,7 +35,7 @@ function hs4wp_options_page()
             update_option('hs4wp_only_use_header', $only_use_header);
             update_option('hs4wp_align_center', $align_center);
             update_option('hs4wp_ext_icon', $ext_icon);
-
+            update_option('hs4wp_ptag_workaround', $ptag_workaround);
 
             // Input
             update_option('hs4wp_slideshow_delay', $input1);
@@ -59,6 +61,7 @@ function hs4wp_options_page()
         $only_use_header    =( get_option('hs4wp_only_use_header')=='on' ) ? "checked":"";
         $align_center       =( get_option('hs4wp_align_center')=='on' ) ? "checked":"";
         $ext_icon           =( get_option('hs4wp_ext_icon')=='on' ) ? "checked":"";
+        $ptag_workaround    =( get_option('hs4wp_ptag_workaround')=='on' ) ? "checked":"";
 
         $slideshow_delay    =  get_option('hs4wp_slideshow_delay');
         $custom_css         =  get_option('hs4wp_custom_css');
@@ -111,6 +114,7 @@ function hs4wp_options_page()
         		 <h2>Information</h2>
             		 <div id="dbx-content" style="text-decoration:none;border-left:1px solid silver;padding-left:10px;">
             		  <img src="$imgpath/web.png"><a href="http://solariz.de/highslide4wordpress/" target="_blank" style="text-decoration:none;"> Plugin Homepage</a><br /><br />
+                      <img src="$imgpath/help.png"><a href="http://solariz.de" target="_blank" style="text-decoration:none;"> Plugin Manual</a><br /><br />
                       <img src="$imgpath/forum.png"><a href="http://solariz.de/forum?wpforumaction=viewforum&f=6.0" target="_blank" style="text-decoration:none;"> Plugin Forum</a><br /><br />
                       <img src="$imgpath/donate.png"><a href="http://solariz.de/donate" target="_blank" style="text-decoration:none;"> Donate</a><br /><br />
 			          <img src="$imgpath/star.png"><a href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/" target="_blank" style="text-decoration:none;"> Rate this plugin</a><br /><br />
@@ -129,13 +133,10 @@ function hs4wp_options_page()
                                 <input id="check0" type="checkbox" name="lic_agreement" $lic_agreement />
                                 <label for="check0" style="$lic_style">I Agree to the License Agreement</label>
                             </div>
-                            <h2>Options</h2>
-                            <!--
+                            <h2>Like it ?</h2>
                             <div>
-                                <label for="alt_text"><b>ALT</b> attribute (example: %name %title)</label><br/>
-                                <input style="border:1px solid #D1D1D1; width:165px;"  id="alt_text" name="alttext" value="$alt_text"/>
-                            </div>
-                            -->
+                            As the most Plugin writers I spent my sparetime to writing those plugins. I do not demand money for non commecial usage but if you like it you can do me a favour. Please <a href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/">rate the Plugin</a> at the official wordpress extension archive. If you want to donate something you find a info link on the right.</div>
+                            <h2>Options</h2>
                             <div>
                                 <input id="check1" type="checkbox" name="coralize" $coralize />
                                 <label for="check1">Use Coral CDN as JS/CSS source</label>
@@ -195,13 +196,19 @@ function hs4wp_options_page()
                             <div>
                                 <input id="check5" type="checkbox" name="only_use_header" $only_use_header />
                                 <label for="check5">Force Include of JS Code into Page Header instead of Footer.<br/>
-                                <small>(Some non API conform Themes require JS loads in the header)</small></label>
+                                <small>Some non API conform Themes require JS loads in the header</small></label>
+                            </div>
+                            <br/>
+                            <div>
+                                <input id="check6" type="checkbox" name="ptag_workaround" $ptag_workaround />
+                                <label for="check6">Enable &lt;/p&gt; workaround.<br/>
+                                <small>If you use lists with multiple [highslide] expander and notice that the breaks between the first expander and second expander are wrong please enable this workaroung. Full explanation <a href="http://solariz.de/forum?wpforumaction=viewtopic&t=132.00">here</a>.</small></label>
                             </div>
                             <br/>
                             <div>
                                 <label for="input2">Use custom <b>highslide.css</b> ?</label>
                                 <input id="input2" type="text" size="59" name="input2" value="$custom_css" /><br/>
-                                <small>(To avoid own CSS changes to be overwritten on Pluginupdate you can specify your own CSS file, please enter full URL. Leave empty for default. e.g.: http://mydomain.com/myhighslide.css)</small>
+                                <small>To avoid own CSS changes to be overwritten on Pluginupdate you can specify your own CSS file, please enter full URL. Leave empty for default. e.g.: http://mydomain.com/myhighslide.css</small>
                             </div>
                             <div class="submit"><input type="submit" name="Submit" value="Update options" /></div>
             			</form>

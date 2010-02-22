@@ -191,9 +191,9 @@ function hs4wp_coralize_uri($uri) {
 function hs4wp_auto_set($content) {
 	global $post,$hs4wp_load_hs;
     // Add HS to Images.
-	   $content = preg_replace_callback('/<a ([^>]+)>/i', 'hs4wp_callback_img', $content);
+	$content = preg_replace_callback('/<a ([^>]+)>/i', 'hs4wp_callback_img', $content);
     // Add HS to HTML Tags if present
-    if(stristr($content,"[highslide]") AND stristr($content,"[/highslide]")) {
+    if(strstr($content,"[highslide]") AND strstr($content,"[/highslide]")) {
        $content = preg_replace_callback('#\[highslide]((?:[^\[]|\[(?!/?highslide])|(?R))+)\[/highslide]#', 'hs4wp_callback_htm', $content);
     }
     return $content;
@@ -202,7 +202,7 @@ function hs4wp_auto_set($content) {
 /**
  * function hs4wp_callback_htm
  * Callback Function of hs4wp_auto_set
- * @version 1.02
+ * @version 1.03
  * @see hs4wp_auto_set
  * @param string preg
  * @author Marco 'solariz' Goetze
@@ -227,8 +227,8 @@ function hs4wp_callback_htm($a) {
         $style = ' align="left" style="width:'.$width.'px;height:'.$height.'px;"';
     else
         $style = ' align="left"';
-
-    $OUT = '<a class="highslide" onclick="return hs.htmlExpand(this, {wrapperClassName: \'draggable-header\',contentId: \'highslide-html_'.$contentID.'\'';
+    $OUT = (get_option('hs4wp_ptag_workaround') == 'on')?'</p>':'';
+    $OUT .= '<a class="highslide" onclick="return hs.htmlExpand(this, {wrapperClassName: \'draggable-header\',contentId: \'highslide-html_'.$contentID.'\'';
     $img = (get_option('hs4wp_ext_icon') == 'on')?'<img src="'.$hs4wp_plugin_uri.'img/ext.png" width="11" height="9" border="0" alt="" style="border:none;">':'';
     if($subject != false) {
       $OUT .= ",headingText:'".htmlentities2($subject)."'";
@@ -237,7 +237,7 @@ function hs4wp_callback_htm($a) {
     } else {
       $OUT .= '} )" href="#">'.$img.' info</a>';
     }
-    $OUT .= "\n";
+//    $OUT .= "\n";
     // opener
     $OUT .= '<div id="highslide-html_'.$contentID.'" class="highslide-html-content"'.$style.'>';
     // HTML Box Header
@@ -250,12 +250,13 @@ function hs4wp_callback_htm($a) {
     // HTML Box Body
     $OUT .= '<div class="highslide-body">'.$str.'</div>';
     // HTML Box Footer
-    $OUT .= '<div class="highslide-footer"><div><span class="highslide-resize" title="Resize"><span></span></span></div></div>';
+    $OUT .= '<div class="highslide-footer"><div><span class="highslide-resize" title="Resize">&nbsp;</span></div></div>';
     // closer
     $OUT .= '</div>';
     $OUT .= "\n";
     return $OUT;
 
+//    return htmlentities($OUT);
 }
 
 /**
