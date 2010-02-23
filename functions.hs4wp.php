@@ -247,6 +247,31 @@ function hs4wp_callback_htm($a) {
                     <li class="highslide-close"><a href="#" onclick="return hs.close(this)">&nbsp;</a></li>
                 </ul>
              </div>';
+    // Flash handler
+    if(get_option('hs4wp_handle_swf') == 'on') {
+      $extension = strtolower(substr($str,strlen($str)-4));
+      if($extension == ".swf") {
+          if($width  < 100) $width  = "500";
+          if($height < 100) $height = "370";
+          // Flash size reduce by x percent
+          $F_Width  = $width;
+          $F_Height = floor($height/100*88);
+          $swf = $str;
+          $str = "";
+          $str .= '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" id="swf_'.$contentID.'" width="'.$F_Width.'" height="'.$F_Height.'">'."\n";
+          $str .= '<param name="movie" value="'.$swf.'" />'."\n";
+          $str .= '<param name="wmode" value="opaque" />'."\n";
+          $str .= '<!--[if !IE]>-->'."\n";
+          $str .= '<object type="application/x-shockwave-flash" data="'.$swf.'" width="'.$F_Width.'" height="'.$F_Height.'" wmode="opaque">'."\n";
+          $str .= '<!--<![endif]-->'."\n";
+          $str .= 'Flash plugin is required to view this object.'."\n";
+          $str .= '<!--[if !IE]>-->'."\n";
+          $str .= '</object>'."\n";
+          $str .= '<!--<![endif]-->'."\n";
+          $str .= '</object> '."\n";
+      }
+    }
+
     // HTML Box Body
     $OUT .= '<div class="highslide-body">'.$str.'</div>';
     // HTML Box Footer
@@ -317,3 +342,23 @@ function hs4wp_selector($array,$selected=false) {
     }
     return $OUT;
 }//EoFu:hs4wp_selector
+
+
+
+
+function hs4wp_admin_init()
+{
+    GLOBAL $hs4wp_plugin_uri;
+    $hs4wpOptionsCSS = $hs4wp_plugin_uri."/options.css";
+    if (is_ssl()) $hs4wpOptionsCSS = preg_replace( '/^http:\/\//', 'https://',  $hs4wpOptionsCSS );
+    wp_register_style('hs4wpOptionsCSS', $hs4wpOptionsCSS);
+    wp_enqueue_style( 'hs4wpOptionsCSS');
+}
+
+function hs4wp_add_media_button()
+{
+  	GLOBAL $hs4wp_plugin_uri;
+	$url = $hs4wp_plugin_uri.'media-button-expander.php?tab=add&TB_iframe=true&amp;height=300&amp;width=640';
+	if (is_ssl()) $url = preg_replace( '/^http:\/\//', 'https://',  $url );
+	echo '<a href="'.$url.'" class="thickbox" title="'.__('Add Highslide HTML Expander','highslide-4-wordpress').'"><img src="'.$hs4wp_plugin_uri.'/img/media-button-expander.png" alt="'.__('Add Highslide HTML Expander','highslide-4-wordpress').'"></a>';
+}
