@@ -39,3 +39,4 @@ Released under a Creative Commons Attribution-NonCommercial 2.5 License.
     add_action('admin_init', 'hs4wp_admin_init');
     add_action('admin_menu', 'hs4wp_config_page');
     if(get_option('hs4wp_media_icon') != "on") add_action('media_buttons', 'hs4wp_add_media_button', 20);
+

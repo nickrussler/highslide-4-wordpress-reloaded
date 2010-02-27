@@ -28,6 +28,7 @@ function hs4wp_options_page()
             $select1            =(!isset($_POST['select1'])? '': intval($_POST['select1']));
             $select2            =(!isset($_POST['select2'])? '': intval($_POST['select2']));
             $select3            =(!isset($_POST['select3'])? '': intval($_POST['select3']));
+            $select4            =(!isset($_POST['select4'])? '': intval($_POST['select4']));
             $textarea1          =(!isset($_POST['textarea1'])? '': stripslashes($_POST['textarea1']));
             // Check boxes
             update_option('hs4wp_lic_agreement', $lic_agreement);
@@ -51,6 +52,7 @@ function hs4wp_options_page()
             update_option('hs4wp_hs_appearance', $select1);
             update_option('hs4wp_hs_dimming', $select2);
             update_option('hs4wp_hs_caption', $select3);
+            update_option('hs4wp_hs_heading', $select4);
             update_option('hs4wp_advanced', $textarea1);
 
 			$msg_status = 'Options saved.';
@@ -109,10 +111,18 @@ function hs4wp_options_page()
         ),get_option('hs4wp_hs_dimming'));
 
         $hs4wp_select3 = hs4wp_selector(array(
-        1=>"Thumbnail Title",
-        2=>"Thumbnail Alt",
+        0=>"none",
+        1=>"Image Title",
+        2=>"Image Alt",
         3=>"Link Title"
         ),get_option('hs4wp_hs_caption'));
+
+        $hs4wp_select4 = hs4wp_selector(array(
+        0=>"none",
+        1=>"Image Title",
+        2=>"Image Alt",
+        3=>"Link Title"
+        ),get_option('hs4wp_hs_heading'));
 
         echo <<<END
         <div id="hs4wOptions">
@@ -124,8 +134,8 @@ function hs4wp_options_page()
         		 <h3>Information</h3>
                   <ul class="infoBox">
 
-                    <img src="$imgpath/web.png"><a href="http://solariz.de/highslide4wordpress/" target="_blank" style="text-decoration:none;"> Plugin Homepage</a><br /><br />
-                    <img src="$imgpath/help.png"><a href="http://solariz.de" target="_blank" style="text-decoration:none;"> Plugin Manual</a><br /><br />
+                    <img src="$imgpath/web.png"><a href="http://solariz.de" target="_blank" style="text-decoration:none;"> Author Homepage</a><br /><br />
+                    <img src="$imgpath/help.png"><a href="http://solariz.de/highslide-wordpress-reloaded" target="_blank" style="text-decoration:none;"> Plugin Manual</a><br /><br />
                     <img src="$imgpath/forum.png"><a href="http://solariz.de/forum?wpforumaction=viewforum&f=6.0" target="_blank" style="text-decoration:none;"> Plugin Forum</a><br /><br />
                     <img src="$imgpath/donate.png"><a href="http://solariz.de/donate" target="_blank" style="text-decoration:none;"> Donate</a><br /><br />
                     <img src="$imgpath/star.png"><a href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/" target="_blank" style="text-decoration:none;"> Rate this plugin</a><br /><br />
@@ -160,7 +170,7 @@ function hs4wp_options_page()
                               As the most Plugin writers I spent my sparetime to writing those plugins. I do not demand money for non commecial usage but if you like it you can do me a favour. Please <a href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/">rate the Plugin</a> at the official wordpress extension archive. If you want to donate something you find a info link on the right.
                               </div>
                             </ul>
-                            <h3>Options<span>[<a href="" target="hs4wpHelp">help</a>]</span></h3>
+                            <h3>Options<span>[<a href="http://solariz.de/highslide-wordpress-reloaded#options" target="hs4wpHelp">help</a>]</span></h3>
                             <ul>
                             <div>
                                 <input id="check1" type="checkbox" name="coralize" $coralize />
@@ -168,7 +178,7 @@ function hs4wp_options_page()
                             </div>
                             <div>
                                 <input id="check3" type="checkbox" name="fadeinout" $fadeinout />
-                                <label for="check3">Enable Fade In/Out transition in Gallerys ?</label>
+                                <label for="check3">Enable Fade In/Out transition in Galleries ?</label>
                             </div>
                             <div>
                                 <input id="check2" type="checkbox" name="credits" $credits />
@@ -206,13 +216,17 @@ function hs4wp_options_page()
                                   <td><select id="select2" name="select2">$hs4wp_select2</select></td>
                               </tr>
                               <tr>
+                                  <td><label for="select4">Heading source: </label></td>
+                                  <td><select id="select4" name="select4">$hs4wp_select4</select></td>
+                              </tr>
+                              <tr>
                                   <td><label for="select3">Caption source: </label></td>
                                   <td><select id="select3" name="select3">$hs4wp_select3</select></td>
                               </tr>
                             </table>
                             </ul>
                             <div class="submit"><input type="submit" name="Submit" value="Save options" /></div>
-                            <h3>Advanced Options<span>[<a href="" target="hs4wpHelp">help</a>]</span></h3>
+                            <h3>Advanced Options<span>[<a href="http://solariz.de/highslide-wordpress-reloaded#advanced" target="hs4wpHelp">help</a>]</span></h3>
                             <ul>
                             <div>
                                 <input id="Acheck1" type="checkbox" name="only_use_header" $only_use_header />

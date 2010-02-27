@@ -61,6 +61,23 @@ function hs4wp_prepare_footer() {
         DEFAULT:
             break;
     }//end switch
+    // hs.headingEval = 'this.a.title';
+    // Heading Mode
+    switch(get_option('hs4wp_hs_heading')) {
+        CASE 1:
+            $OUT .= "hs.headingEval = 'this.thumb.title';\n";
+            break;
+        CASE 2:
+            $OUT .= "hs.headingEval = 'this.thumb.alt';\n";
+            break;
+        CASE 3:
+            $OUT .= "hs.headingEval = 'this.a.title';\n";
+            break;
+        DEFAULT:
+            break;
+    }//end switch
+
+
     // Style Definitions
     switch(get_option('hs4wp_hs_appearance')) {
         CASE 1:
@@ -362,3 +379,6 @@ function hs4wp_add_media_button()
 	if (is_ssl()) $url = preg_replace( '/^http:\/\//', 'https://',  $url );
 	echo '<a href="'.$url.'" class="thickbox" title="'.__('Add Highslide HTML Expander','highslide-4-wordpress').'"><img src="'.$hs4wp_plugin_uri.'/img/media-button-expander.png" alt="'.__('Add Highslide HTML Expander','highslide-4-wordpress').'"></a>';
 }
+
+
+
