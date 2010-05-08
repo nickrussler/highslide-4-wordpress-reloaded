@@ -4,7 +4,7 @@ Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom
 Requires at least: 2.0.2
 Tested up to: 2.9.2
-Stable tag: 1.14
+Stable tag: 1.15
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
 
@@ -58,6 +58,9 @@ You can find a small Forum related to my Plugins at http://solariz.de feel free 
 5. choose many styles or set your own in Advanced
 
 == Changelog ==
+= 1.15 =
+* fix for HTML expanders in <p> tags, false linebreak shouldn`t occure anymore
+
 = 1.14 =
 * Workaround for multiple HTML expander linebreak bug
 * Added link tu manual page

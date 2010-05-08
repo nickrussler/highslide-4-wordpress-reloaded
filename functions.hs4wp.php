@@ -22,7 +22,7 @@ function hs4wp_prepare_header() {
 /**
  * function hs4wp_prepare_footer
  * Add neccesary JS to footer
- * @version 1.0
+ * @version 1.01
  * @author Marco 'solariz' Goetze
  * @return bool
  */
@@ -38,7 +38,7 @@ function hs4wp_prepare_footer() {
         $hs_graphics_uri = str_ireplace("http://".$_SERVER['HTTP_HOST'],"",$hs_graphics_uri);
         $hs_script_uri   = str_ireplace("http://".$_SERVER['HTTP_HOST'],"",$hs_script_uri);
     }
-    $OUT = "<!-- HighSlide4Wordpress -->\n";
+    $OUT = "<!-- HighSlide4Wordpress Footer JS Includes -->\n";
     $OUT .= '<script type="text/javascript" src="'.$hs_script_uri.'"></script>';
     $OUT .= '<script type="text/javascript">'."\n";
     $OUT .= "hs.graphicsDir = '".$hs_graphics_uri."';\n";
@@ -61,23 +61,6 @@ function hs4wp_prepare_footer() {
         DEFAULT:
             break;
     }//end switch
-    // hs.headingEval = 'this.a.title';
-    // Heading Mode
-    switch(get_option('hs4wp_hs_heading')) {
-        CASE 1:
-            $OUT .= "hs.headingEval = 'this.thumb.title';\n";
-            break;
-        CASE 2:
-            $OUT .= "hs.headingEval = 'this.thumb.alt';\n";
-            break;
-        CASE 3:
-            $OUT .= "hs.headingEval = 'this.a.title';\n";
-            break;
-        DEFAULT:
-            break;
-    }//end switch
-
-
     // Style Definitions
     switch(get_option('hs4wp_hs_appearance')) {
         CASE 1:
@@ -169,6 +152,28 @@ function hs4wp_prepare_footer() {
     echo $OUT;
 }//EoFu: hs4wp_prepare_footer
 
+
+/**
+ * function hs4wp_add_to_footer
+ * Add HTML Expander DIV`s to footer
+ * @version 1.0
+ * @author Marco 'solariz' Goetze
+ * @return bool
+ */
+function hs4wp_add_to_footer() {
+    GLOBAL $hs4wp_insert_into_footer;
+    if(isset($hs4wp_insert_into_footer) == false OR $hs4wp_insert_into_footer == "") {
+        return false;
+    } else {
+        $OUT = "<!-- HighSlide4Wordpress Footer HTML Expander DIVs -->\n";
+        $OUT .= $hs4wp_insert_into_footer;
+        $OUT .= "\n";
+        echo $OUT;
+        return true;
+    }
+}
+
+
 /**
  * function hs4wp_config_page
  * Add & Manage config pages in WP Admin
@@ -219,14 +224,14 @@ function hs4wp_auto_set($content) {
 /**
  * function hs4wp_callback_htm
  * Callback Function of hs4wp_auto_set
- * @version 1.03
+ * @version 1.04
  * @see hs4wp_auto_set
  * @param string preg
  * @author Marco 'solariz' Goetze
  * @return string
  */
 function hs4wp_callback_htm($a) {
-    global $post,$hs4wp_plugin_uri;
+    global $post,$hs4wp_plugin_uri,$hs4wp_insert_into_footer;
     $str = trim($a[1]);
     $contentID = $post->ID.md5($str);
     // get options
@@ -256,14 +261,16 @@ function hs4wp_callback_htm($a) {
     }
 //    $OUT .= "\n";
     // opener
-    $OUT .= '<div id="highslide-html_'.$contentID.'" class="highslide-html-content"'.$style.'>';
+
+    $hs4wp_insert_into_footer .= '<div id="highslide-html_'.$contentID.'" class="highslide-html-content"'.$style.'>';
     // HTML Box Header
-	$OUT .= '<div class="highslide-header">
+	$hs4wp_insert_into_footer .= '<div class="highslide-header">
                 <ul>
                     <li class="highslide-move"><a href="#" onclick="return false">&nbsp;</a></li>
                     <li class="highslide-close"><a href="#" onclick="return hs.close(this)">&nbsp;</a></li>
                 </ul>
              </div>';
+
     // Flash handler
     if(get_option('hs4wp_handle_swf') == 'on') {
       $extension = strtolower(substr($str,strlen($str)-4));
@@ -290,12 +297,12 @@ function hs4wp_callback_htm($a) {
     }
 
     // HTML Box Body
-    $OUT .= '<div class="highslide-body">'.$str.'</div>';
+    $hs4wp_insert_into_footer .= '<div class="highslide-body">'.$str.'</div>';
     // HTML Box Footer
-    $OUT .= '<div class="highslide-footer"><div><span class="highslide-resize" title="Resize">&nbsp;</span></div></div>';
+    $hs4wp_insert_into_footer .= '<div class="highslide-footer"><div><span class="highslide-resize" title="Resize">&nbsp;</span></div></div>';
     // closer
-    $OUT .= '</div>';
-    $OUT .= "\n";
+    $hs4wp_insert_into_footer .= '</div>';
+    $hs4wp_insert_into_footer .= "\n";
     return $OUT;
 
 //    return htmlentities($OUT);
