@@ -256,8 +256,8 @@ function hs4wp_callback_htm($a) {
     $OUT .= '<a class="highslide" onclick="return hs.htmlExpand(this, {wrapperClassName: \'draggable-header\',contentId: \'highslide-html_'.$contentID.'\'';
     $img = (get_option('hs4wp_ext_icon') == 'on')?'<img src="'.$hs4wp_plugin_uri.'img/ext.png" width="11" height="9" border="0" alt="" style="border:none;">':'';
     if($subject != false) {
-      $OUT .= ",headingText:'".htmlentities2($subject)."'";
-      $OUT .= '} )" href="#">'.$img." ".htmlentities2($linkName).'</a>';
+      $OUT .= ",headingText:'".htmlentities($subject,ENT_QUOTES,'UTF-8')."'";
+      $OUT .= '} )" href="#">'.$img." ".htmlentities($linkName,ENT_QUOTES,'UTF-8').'</a>';
       $str = str_replace($reg[0],"",$str);
     } else {
       $OUT .= '} )" href="#">'.$img.' info</a>';
