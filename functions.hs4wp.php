@@ -3,7 +3,7 @@
 /**
  * function hs4wp_prepare_header
  * Add neccesary includes / CSS to WP Header
- * @version 1.0
+ * @version 1.1
  * @author Marco 'solariz' Goetze
  * @return bool
  */
@@ -15,7 +15,10 @@ function hs4wp_prepare_header() {
     if($coralize != "" && $coralize != false) {
         $hs_css_uri = hs4wp_coralize_uri($hs_css_uri);
     }
-    $OUT = '<link rel="stylesheet" href="'.$hs_css_uri.'" type="text/css" media="screen" />';
+    $OUT = '<link rel="stylesheet" href="'.$hs_css_uri.'" type="text/css" media="screen" />'."\n";
+    $OUT .= "<!--[if lt IE 7]>\n";
+    $OUT .= '<link rel="stylesheet" type="text/css" href="'.$hs4wp_plugin_uri.'highslide-ie6.css" />'."\n";
+    $OUT .= "<![endif]-->\n";
     echo $OUT;
 }//EoFu: hs4wp_prepare_header
 

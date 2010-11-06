@@ -1,10 +1,10 @@
-=== Highslide 4 Wordpress *reloaded* ===
+﻿=== Highslide 4 Wordpress *reloaded* ===
 Contributors: solariz
 Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom
 Requires at least: 2.0.2
-Tested up to: 2.9.2
-Stable tag: 1.15
+Tested up to: 3.0.1
+Stable tag: 1.16
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
 
@@ -58,6 +58,13 @@ You can find a small Forum related to my Plugins at http://solariz.de feel free 
 5. choose many styles or set your own in Advanced
 
 == Changelog ==
+= 1.16 =
+* Upgrade to latest highslide source 1.1.9
+* Fixed problems with Google Chrome
+* Added IE6 special CSS workaround
+* upgrade to img sets
+* Tested with WP 3.0.1
+
 = 1.15 =
 * fix for HTML expanders in <p> tags, false linebreak shouldn`t occure anymore
 
