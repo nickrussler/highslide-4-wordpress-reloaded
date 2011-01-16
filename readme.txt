@@ -6,6 +6,7 @@ Requires at least: 2.0.2
 Tested up to: 3.0.1
 Stable tag: 1.16
 
+
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
 
 == Description ==
