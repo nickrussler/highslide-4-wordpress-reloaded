@@ -32,9 +32,9 @@ function hs4wp_options_page()
             $textarea1          =(!isset($_POST['textarea1'])? '': stripslashes($_POST['textarea1']));
             // Check boxes
             update_option('hs4wp_lic_agreement', $lic_agreement);
-			update_option('hs4wp_coralize', $coralize);
-			update_option('hs4wp_credits', $credits);
-			update_option('hs4wp_fadeinout', $fadeinout);
+            update_option('hs4wp_coralize', $coralize);
+            update_option('hs4wp_credits', $credits);
+            update_option('hs4wp_fadeinout', $fadeinout);
             update_option('hs4wp_attachment_filter', $attachment_filter);
             update_option('hs4wp_only_use_header', $only_use_header);
             update_option('hs4wp_align_center', $align_center);
@@ -136,9 +136,9 @@ function hs4wp_options_page()
 
                     <img src="$imgpath/web.png"><a href="http://solariz.de" target="_blank" style="text-decoration:none;"> Author Homepage</a><br /><br />
                     <img src="$imgpath/help.png"><a href="http://solariz.de/highslide-wordpress-reloaded" target="_blank" style="text-decoration:none;"> Plugin Manual</a><br /><br />
-                    <img src="$imgpath/forum.png"><a href="http://solariz.de/forum?wpforumaction=viewforum&f=6.0" target="_blank" style="text-decoration:none;"> Plugin Forum</a><br /><br />
-                    <img src="$imgpath/donate.png"><a href="http://solariz.de/donate" target="_blank" style="text-decoration:none;"> Donate</a><br /><br />
+                    <img src="$imgpath/donate.png"><a href="http://solariz.de/donate" target="_blank" style="text-decoration:none;"> How to Donate?</a> <br /><br />
                     <img src="$imgpath/star.png"><a href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/" target="_blank" style="text-decoration:none;"> Rate this plugin</a><br /><br />
+                    <a href="http://flattr.com/thing/116751/Plugin-Highslide-4-Wordpress-reloaded" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a>
                   </ul>
         		<h3>The Author</h3>
                     <div class="infoBox">
@@ -255,7 +255,7 @@ function hs4wp_options_page()
                             <b>Custom Highslide Config:</b><br/>
                             In this Textbox you can enter Advanced Highslide-JS Parameter. You can find a List of all possible custom Paramteres
                             <a href="http://highslide.com/ref/" target="_blank">here</a>. Each line one Statement.<br/>
-                            <textarea id="textarea1" "name="textarea1" cols="60" rows="5">$textarea1</textarea><br/>
+                            <textarea id="textarea1" name="textarea1" cols="60" rows="5">$textarea1</textarea><br/>
                             <span style="color:red">Attention!</span>&nbsp;Insert only valid JS code, else it can break the plugin functionality.
                             If you have no clue what HS Parameters are just leave this textbox empty.
                             </ul>

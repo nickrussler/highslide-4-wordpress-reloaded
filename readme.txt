@@ -3,8 +3,8 @@ Contributors: solariz
 Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom
 Requires at least: 2.0.2
-Tested up to: 3.0.1
-Stable tag: 1.16
+Tested up to: 3.0.4
+Stable tag: 1.17
 
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
@@ -46,9 +46,19 @@ Summary:
 
 == Frequently Asked Questions ==
 
-= I have a problem or suggestion =
+= Is there a additional Manual ? =
+Something like; I put on a detailed page on my website with some detailed information
+and a kind of manual / instructions. http://solariz.de/highslide-wordpress-reloaded
 
+= I have a problem or suggestion =
 You can find a small Forum related to my Plugins at http://solariz.de feel free to ask.
+
+= Is a commecial use possible ? =
+Yes but the Original Highslide Script requires you to buy a official license,
+it`s not expensive but this should be mentioned. On my Side I don`t request
+money but if you want to use any of my scripts in a commercial way or on a
+commecial webpage please check out my amazon wishlist there are several things
+from cheap to expensive.   http://solariz.de/donate
 
 == Screenshots ==
 
@@ -59,6 +69,13 @@ You can find a small Forum related to my Plugins at http://solariz.de feel free 
 5. choose many styles or set your own in Advanced
 
 == Changelog ==
+= 1.17 =
+* Added admin warning msg if lic. agreement was not accepted
+* Upgraded highslide.css
+* Update to the readme & faq
+* Integrated Flattr Button in the Admin config Page
+* Fixed custom conf loading bug mentioned by Juno in the Forum, thx
+
 = 1.16 =
 * Upgrade to latest highslide source 1.1.9
 * Fixed problems with Google Chrome

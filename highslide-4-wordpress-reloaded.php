@@ -19,13 +19,21 @@ Released under a Creative Commons Attribution-NonCommercial 2.5 License.
 
 // Versions
     $hs4wp_ver_hs       = 419;
-    $hs4wp_ver_plugin   = 116;
+    $hs4wp_ver_plugin   = 117;
+    
+// addon check
+    if ( !function_exists( 'add_action' ) ) {
+	echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
+	exit;
+    }    
 
 // fixed set / requires
     $hs4wp_plugin_path = trailingslashit(ABSPATH.'wp-content/plugins/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__)));
     $hs4wp_plugin_uri  = trailingslashit(WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__)));
     require_once($hs4wp_plugin_path.'functions.hs4wp.php');
     $hs4wp_img_count = 0;
+    
+    
 // WP Actions & Filter
     if(get_option('hs4wp_lic_agreement') == "on") {
       add_filter('the_content', 'hs4wp_auto_set',60);
@@ -40,4 +48,7 @@ Released under a Creative Commons Attribution-NonCommercial 2.5 License.
     add_action('admin_init', 'hs4wp_admin_init');
     add_action('admin_menu', 'hs4wp_config_page');
     if(get_option('hs4wp_media_icon') != "on") add_action('media_buttons', 'hs4wp_add_media_button', 20);
-
+    
+    
+    // register_activation_hook(__FILE__, 'hs4wp_act'); 
+    add_action('init', 'hs4wp_act');

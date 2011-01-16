@@ -392,3 +392,11 @@ function hs4wp_add_media_button()
 
 
 
+function hs4wp_act(){ 
+    if(get_option('hs4wp_lic_agreement')!='on' && isset($_POST['submitted']) != true) {
+        echo "
+        <div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* is almost ready.')."</strong> ".sprintf(__('You must accept the License Agreement and <a href="%1$s">configure</a> it to work.'), "./options-general.php?page=highslide-4-wordpress-reloaded/functions.hs4wp.php")."</p></div>
+        ";
+    }
+    return;   
+}
