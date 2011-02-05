@@ -3,7 +3,7 @@ Contributors: solariz
 Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom
 Requires at least: 2.0.2
-Tested up to: 3.0.4
+Tested up to: 3.1
 Stable tag: 1.17
 
 
@@ -69,6 +69,19 @@ from cheap to expensive.   http://solariz.de/donate
 5. choose many styles or set your own in Advanced
 
 == Changelog ==
+= 1.18 =
+* Included new minified JS and CSS files
+* Option in Advanced Options to toggle between minified and full JS/CSS version
+* Included more Highslide JS lib codes for centering and slideshow
+* New config option to configure the text output of the plugin, now you can translate the plugins output as you prefer
+* removed CSS Border on hover
+* added requirement check of PHP5.x 
+* changed plugin activation message to appear in admin only
+* update to the lic. agreement text
+* Workaround for attachment images not working, reported by heliblog 12/10
+* added advanced config to manually change the z-index of hs window
+* added option to disable slideshow bar
+
 = 1.17 =
 * Added admin warning msg if lic. agreement was not accepted
 * Upgraded highslide.css

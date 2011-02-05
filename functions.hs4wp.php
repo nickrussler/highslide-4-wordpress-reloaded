@@ -3,21 +3,36 @@
 /**
  * function hs4wp_prepare_header
  * Add neccesary includes / CSS to WP Header
- * @version 1.1
+ * @version 1.11
  * @author Marco 'solariz' Goetze
  * @return bool
  */
 function hs4wp_prepare_header() {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_ver_plugin;
     $custom_css = get_option('hs4wp_custom_css');
-    $hs_css_uri = (strlen($custom_css)>=5)?$custom_css."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin:$hs4wp_plugin_uri."highslide.css?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
+    
+    // check if min or full versions should be used
+    $CSSJS = array();
+    if(get_option('hs4wp_useFullJS') == 'on') {    
+        // FULL
+        $CSSJS['hs']        = 'highslide.full.css';
+        $CSSJS['hsmsie']    = 'highslide-ie6.full.css';
+        $CSSJS['hsjs']      = 'highslide.full.js';
+    } else {
+        // DEFAULT - minified versions
+        $CSSJS['hs']        = 'highslide.min.css';
+        $CSSJS['hsmsie']    = 'highslide-ie6.min.css';
+        $CSSJS['hsjs']      = 'highslide.min.js';               
+    }
+    
+    $hs_css_uri = (strlen($custom_css)>=5)?$custom_css."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin:$hs4wp_plugin_uri.$CSSJS['hs']."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
     $coralize= get_option('hs4wp_coralize');
     if($coralize != "" && $coralize != false) {
         $hs_css_uri = hs4wp_coralize_uri($hs_css_uri);
     }
     $OUT = '<link rel="stylesheet" href="'.$hs_css_uri.'" type="text/css" media="screen" />'."\n";
     $OUT .= "<!--[if lt IE 7]>\n";
-    $OUT .= '<link rel="stylesheet" type="text/css" href="'.$hs4wp_plugin_uri.'highslide-ie6.css" />'."\n";
+    $OUT .= '<link rel="stylesheet" type="text/css" href="'.$hs4wp_plugin_uri.$CSSJS['hsmsie'].'" />'."\n";
     $OUT .= "<![endif]-->\n";
     echo $OUT;
 }//EoFu: hs4wp_prepare_header
@@ -25,14 +40,20 @@ function hs4wp_prepare_header() {
 /**
  * function hs4wp_prepare_footer
  * Add neccesary JS to footer
- * @version 1.01
+ * @version 1.02
  * @author Marco 'solariz' Goetze
  * @return bool
  */
 function hs4wp_prepare_footer() {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_ver_plugin,$hs4wp_img_count;
+    // check if min or full versions should be used     
+    if(get_option('hs4wp_useFullJS') == 'on') { 
+        $hsjs = 'highslide.full.js';
+    } else {
+        $hsjs = 'highslide.min.js';
+    }  
     $coralize= get_option('hs4wp_coralize');
-    $hs_script_uri = $hs4wp_plugin_uri."hs-custom-min.js?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
+    $hs_script_uri = $hs4wp_plugin_uri.$hsjs."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
     $hs_graphics_uri = $hs4wp_plugin_uri."graphics/";
     if($coralize != "" && $coralize != false) {
         $hs_script_uri      = hs4wp_coralize_uri($hs_script_uri);
@@ -42,6 +63,7 @@ function hs4wp_prepare_footer() {
         $hs_script_uri   = str_ireplace("http://".$_SERVER['HTTP_HOST'],"",$hs_script_uri);
     }
     $OUT = "<!-- HighSlide4Wordpress Footer JS Includes -->\n";
+    $OUT .= '<a href="http://solariz.de" title="Highslide for Wordpress" style="display:none">highslide wordpress</a>'."\n";
     $OUT .= '<script type="text/javascript" src="'.$hs_script_uri.'"></script>';
     $OUT .= '<script type="text/javascript">'."\n";
     $OUT .= "hs.graphicsDir = '".$hs_graphics_uri."';\n";
@@ -136,7 +158,7 @@ function hs4wp_prepare_footer() {
     // Advanced Section
       $OUT .= get_option('hs4wp_advanced');
 	// Add the controlbar
-    if($hs4wp_img_count > 1) {
+    if($hs4wp_img_count > 1 && get_option('hs4wp_disable_slideshow') == false) {
       $OUT .= "if (hs.addSlideshow) hs.addSlideshow({\n";
       $interval = intval(get_option('hs4wp_slideshow_delay')*1000);
       if($interval < 1000) $interval = 5000;
@@ -151,6 +173,34 @@ function hs4wp_prepare_footer() {
       $OUT .= "\t}\n";
       $OUT .= "});\n";
     }
+    $hszIndex = get_option('hs4wp_custom_zindex');
+    if( $hszIndex != false ) {
+        $OUT .= "hs.zIndexCounter = ".$hszIndex.";\n";
+    }
+    // Custom language / translation option
+    if( get_option('hs4wp_use_lang')=='on' ) {
+        $slideshow_delay    = get_option('hs4wp_langtext');
+        $OUT .= "hs.lang = {";
+        if($slideshow_delay[0]) $OUT .= "loadingText : '".$slideshow_delay[0]."',\n";
+        if($slideshow_delay[1]) $OUT .= "loadingTitle : '".$slideshow_delay[1]."',\n";        
+        if($slideshow_delay[2]) $OUT .= "focusTitle : '".$slideshow_delay[2]."',\n";        
+        if($slideshow_delay[3]) $OUT .= "restoreTitle : '".$slideshow_delay[3]."',\n";
+        if($slideshow_delay[4]) $OUT .= "fullExpandTitle : '".$slideshow_delay[4]."',\n";
+        if($slideshow_delay[5]) $OUT .= "previousText : '".$slideshow_delay[5]."',\n";
+        if($slideshow_delay[6]) $OUT .= "nextText : '".$slideshow_delay[6]."',\n";
+        if($slideshow_delay[7]) $OUT .= "closeText : '".$slideshow_delay[7]."',\n";
+        if($slideshow_delay[8]) $OUT .= "moveText : '".$slideshow_delay[8]."',\n";
+        if($slideshow_delay[8]) $OUT .= "moveTitle : '".$slideshow_delay[8]."',\n";
+        if($slideshow_delay[9]) $OUT .= "closeTitle : '".$slideshow_delay[9]."',\n";
+        if($slideshow_delay[10]) $OUT .= "resizeTitle : '".$slideshow_delay[10]."',\n";
+        if($slideshow_delay[11]) $OUT .= "playText : '".$slideshow_delay[11]."',\n";
+        if($slideshow_delay[12]) $OUT .= "playTitle : '".$slideshow_delay[12]."',\n";
+        if($slideshow_delay[13]) $OUT .= "pauseText : '".$slideshow_delay[13]."',\n";
+        if($slideshow_delay[14]) $OUT .= "pauseTitle : '".$slideshow_delay[14]."',\n";
+        if($slideshow_delay[15]) $OUT .= "previousTitle : '".$slideshow_delay[15]."',\n";
+        if($slideshow_delay[16]) $OUT .= "nextTitle : '".$slideshow_delay[16]."',\n";
+        $OUT .= "}";       
+    }    
     $OUT .= "</script>\n";
     echo $OUT;
 }//EoFu: hs4wp_prepare_footer
@@ -336,18 +386,25 @@ function hs4wp_callback_img($a) {
     return $a[0];
 }
 
+
 /**
  * function hs4wp_auto_set_attachmentURL
  * Function containing STRING to add on found href img
- * @version 1.01
+ * @version 1.02
  * @param string $url
  * @author Marco 'solariz' Goetze
  * @return string
  */
 function hs4wp_auto_set_attachmentURL($url) {
+    GLOBAL $attachment_id,$hs4wp_attachment_workaround;
+    if($attachment_id < 1 || wp_attachment_is_image($attachment_id) != true) return $url;      
     // chek if URL already contain highslide parts
     if(stripos($url,"highslide") == false && stripos($url,"onclick") == false && is_attachment() == true) {
-        $url = $url."\" class=\"highslide\" onclick=\"return hs.expand(this)";
+        if($hs4wp_attachment_workaround == 1) {
+            $url = wp_get_attachment_url($attachment_id);
+            $url = $url."\" class=\"highslide\" onclick=\"return hs.expand(this)";
+        }
+        ++$hs4wp_attachment_workaround;
     }
     return $url;
 }
@@ -376,7 +433,7 @@ function hs4wp_selector($array,$selected=false) {
 function hs4wp_admin_init()
 {
     GLOBAL $hs4wp_plugin_uri;
-    $hs4wpOptionsCSS = $hs4wp_plugin_uri."/options.css";
+    $hs4wpOptionsCSS = $hs4wp_plugin_uri."options.full.css";
     if (is_ssl()) $hs4wpOptionsCSS = preg_replace( '/^http:\/\//', 'https://',  $hs4wpOptionsCSS );
     wp_register_style('hs4wpOptionsCSS', $hs4wpOptionsCSS);
     wp_enqueue_style( 'hs4wpOptionsCSS');
@@ -393,10 +450,12 @@ function hs4wp_add_media_button()
 
 
 function hs4wp_act(){ 
-    if(get_option('hs4wp_lic_agreement')!='on' && isset($_POST['submitted']) != true) {
-        echo "
-        <div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* is almost ready.')."</strong> ".sprintf(__('You must accept the License Agreement and <a href="%1$s">configure</a> it to work.'), "./options-general.php?page=highslide-4-wordpress-reloaded/functions.hs4wp.php")."</p></div>
-        ";
+    if( is_admin() ) {
+        if(get_option('hs4wp_lic_agreement')!='on' && isset($_POST['submitted']) != true) {
+            echo "
+            <div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* is almost ready.')."</strong> ".sprintf(__('You must accept the License Agreement and <a href="%1$s">configure</a> it to work.'), "./options-general.php?page=highslide-4-wordpress-reloaded/functions.hs4wp.php")."</p></div>
+            ";
+        }
     }
     return;   
 }

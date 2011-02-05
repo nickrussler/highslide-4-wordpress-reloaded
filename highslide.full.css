@@ -16,10 +16,11 @@
 .highslide img {
 	border: 0;
 }
+
 .highslide:hover img {
-        border: 2px solid silver;
-	border-color: gray;
+        border: 0;
 }
+
 .highslide-active-anchor img {
 	visibility: hidden;
 }

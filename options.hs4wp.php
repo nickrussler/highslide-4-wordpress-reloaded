@@ -21,8 +21,10 @@ function hs4wp_options_page()
             $ext_icon           =(!isset($_POST['ext_icon'])? '': $_POST['ext_icon']);
             $ptag_workaround    =(!isset($_POST['ptag_workaround'])? '': $_POST['ptag_workaround']);
             $media_icon         =(!isset($_POST['media_icon'])? '': $_POST['media_icon']);
-            $handle_swf         =(!isset($_POST['handle_swf'])? '': $_POST['handle_swf']);
-
+            $useFullJS          =(!isset($_POST['useFullJS'])? '': $_POST['useFullJS']);
+            $handle_swf         =(!isset($_POST['handle_swf'])? '': $_POST['handle_swf']);         
+            $disable_slideshow  =(!isset($_POST['disable_slideshow'])? '': $_POST['disable_slideshow']);         
+            $use_lang           =(!isset($_POST['use_lang'])? '': $_POST['use_lang']);
             $input1             =(!isset($_POST['input1'])? 5: intval($_POST['input1']));
             $input2             =(!isset($_POST['input2'])? '': $_POST['input2']);
             $select1            =(!isset($_POST['select1'])? '': intval($_POST['select1']));
@@ -30,6 +32,28 @@ function hs4wp_options_page()
             $select3            =(!isset($_POST['select3'])? '': intval($_POST['select3']));
             $select4            =(!isset($_POST['select4'])? '': intval($_POST['select4']));
             $textarea1          =(!isset($_POST['textarea1'])? '': stripslashes($_POST['textarea1']));
+            $zinput             =(!isset($_POST['zinput'])? '': intval($_POST['zinput'])); 
+            
+            // Language Inputs
+            $inputL0            =(!isset($_POST['inputL0'])? false: stripslashes($_POST['inputL0'])); 
+            $inputL1            =(!isset($_POST['inputL1'])? false: stripslashes($_POST['inputL1'])); 
+            $inputL2            =(!isset($_POST['inputL2'])? false: stripslashes($_POST['inputL2'])); 
+            $inputL3            =(!isset($_POST['inputL3'])? false: stripslashes($_POST['inputL3'])); 
+            $inputL4            =(!isset($_POST['inputL4'])? false: stripslashes($_POST['inputL4'])); 
+            $inputL5            =(!isset($_POST['inputL5'])? false: stripslashes($_POST['inputL5'])); 
+            $inputL6            =(!isset($_POST['inputL6'])? false: stripslashes($_POST['inputL6'])); 
+            $inputL7            =(!isset($_POST['inputL7'])? false: stripslashes($_POST['inputL7'])); 
+            $inputL8            =(!isset($_POST['inputL8'])? false: stripslashes($_POST['inputL8']));
+            $inputL9            =(!isset($_POST['inputL9'])? false: stripslashes($_POST['inputL9']));
+            $inputL10           =(!isset($_POST['inputL10'])? false: stripslashes($_POST['inputL10']));
+            $inputL11           =(!isset($_POST['inputL11'])? false: stripslashes($_POST['inputL11']));
+            $inputL12           =(!isset($_POST['inputL12'])? false: stripslashes($_POST['inputL12']));
+            $inputL13           =(!isset($_POST['inputL13'])? false: stripslashes($_POST['inputL13']));
+            $inputL14           =(!isset($_POST['inputL14'])? false: stripslashes($_POST['inputL14']));
+            $inputL15           =(!isset($_POST['inputL15'])? false: stripslashes($_POST['inputL15']));
+            $inputL16           =(!isset($_POST['inputL16'])? false: stripslashes($_POST['inputL16']));
+
+            
             // Check boxes
             update_option('hs4wp_lic_agreement', $lic_agreement);
             update_option('hs4wp_coralize', $coralize);
@@ -40,13 +64,39 @@ function hs4wp_options_page()
             update_option('hs4wp_align_center', $align_center);
             update_option('hs4wp_ext_icon', $ext_icon);
             update_option('hs4wp_ptag_workaround', $ptag_workaround);
-            update_option('hs4wp_media_icon', $media_icon);
+            update_option('hs4wp_media_icon', $media_icon);          
             update_option('hs4wp_handle_swf', $handle_swf);
-
-
+            update_option('hs4wp_disable_slideshow', $disable_slideshow);            
+            update_option('hs4wp_useFullJS', $useFullJS);    
+            update_option('hs4wp_use_lang', $use_lang);    
+            
             // Input
             update_option('hs4wp_slideshow_delay', $input1);
             update_option('hs4wp_custom_css', $input2);
+            update_option('hs4wp_custom_zindex', $zinput);
+            
+            
+            
+            // Language 
+            update_option('hs4wp_langtext', array(
+                0=>$inputL0,
+                1=>$inputL1,
+                2=>$inputL2,
+                3=>$inputL3,
+                4=>$inputL4,
+                5=>$inputL5,
+                6=>$inputL6,
+                7=>$inputL7,
+                8=>$inputL8,
+                9=>$inputL9,
+                10=>$inputL10,
+                11=>$inputL11,
+                12=>$inputL12,
+                13=>$inputL13,
+                14=>$inputL14,
+                15=>$inputL15,
+                16=>$inputL16                
+            ));
 
             // Selects
             update_option('hs4wp_hs_appearance', $select1);
@@ -72,10 +122,18 @@ function hs4wp_options_page()
         $ptag_workaround    =( get_option('hs4wp_ptag_workaround')=='on' ) ? "checked":"";
         $media_icon         =( get_option('hs4wp_media_icon')=='on' ) ? "checked":"";
         $handle_swf         =( get_option('hs4wp_handle_swf')=='on' ) ? "checked":"";
-
+        $disable_slideshow  =( get_option('hs4wp_disable_slideshow')=='on' ) ? "checked":"";
+        $useFullJS          =( get_option('hs4wp_useFullJS')=='on' ) ? "checked":"";
+        $use_lang           =( get_option('hs4wp_use_lang')=='on' ) ? "checked":"";
+        
         $slideshow_delay    =  get_option('hs4wp_slideshow_delay');
         $custom_css         =  get_option('hs4wp_custom_css');
         $textarea1          =  get_option('hs4wp_advanced');
+        $hszIndex           =  get_option('hs4wp_custom_zindex');
+              
+        $hs4wp_langtext    = get_option('hs4wp_langtext');
+        
+        
     // Defaults
         if(!$slideshow_delay) $slideshow_delay = 5;
 
@@ -159,6 +217,8 @@ function hs4wp_options_page()
                               <br/>
                               <p><b>What is a commercial website?</b><br/>A commercial website is a website which purpose is generating revenue or cash flow of any type, and that isn't under a non-profit organization. So if you're selling a product, selling advertisement, selling a service or just marketing a commercial business, your site is commercial. A company website is also commercial even if it doesn't sell anything, as it's purpose is to front a commercial company.</p>
                               <br/>
+                              <p><b>I`m commercial in someway, and now?</b><br/>This plugin consists of two parts, 1) the Javascript by Torstein Honsi and on 2) the Wordpress part by me. Highslide itself needs a commercial license to use it for commecial projects, you can obtain it <a href="http://www.highslide.com">here</a>. The commercial use of the Wordpress plugin itself is donationware, so if you use it please use the "How to Donate Link" in the right bar to send me a donation. How much, choose what the plugin is worth to you but please send at least $1 to cover my hosting costs of my blog / webpage. Thanks.</p>
+                                <br/>
                               <div>
                                   <input id="check0" type="checkbox" name="lic_agreement" $lic_agreement />
                                   <label for="check0" style="$lic_style">I Agree to the License Agreement</label>
@@ -200,6 +260,10 @@ function hs4wp_options_page()
                                 <input id="check7" type="checkbox" name="handle_swf" $handle_swf />
                                 <label for="check7">Handle SWF files auto. as Object in HTML Expander ?</label>
                             </div>
+                            <div>
+                                <input id="check8" type="checkbox" name="disable_slideshow" $disable_slideshow />
+                                <label for="check8">Disable Slideshow functionality.</label>
+                            </div>        
                             <br/>
                             <!-- left aligned input -->
                             <table>
@@ -226,6 +290,32 @@ function hs4wp_options_page()
                             </table>
                             </ul>
                             <div class="submit"><input type="submit" name="Submit" value="Save options" /></div>
+                            <h3>Texts / Language / Translation<span>[<a href="http://solariz.de/highslide-wordpress-reloaded#language" target="hs4wpHelp">help</a>]</span></h3>
+                            <ul>
+                            <div>
+                                <input id="Lcheck1" type="checkbox" name="use_lang" $use_lang />
+                                <label for="Lcheck1">Use text below instead of default ?</label>
+                            </div>        
+                                <input type="text" size="60" name="inputL0" value="$hs4wp_langtext[0]" /><i>(<label for="inputL0">Loading...</label>)</i></br>
+                                <input type="text" size="60" name="inputL1" value="$hs4wp_langtext[1]" /><i>(<label for="inputL1">Click to cancel</label>)</i></br>
+                                <input type="text" size="60" name="inputL2" value="$hs4wp_langtext[2]" /><i>(<label for="inputL2">Click to bring to front</label>)</i></br>
+                                <input type="text" size="60" name="inputL3" value="$hs4wp_langtext[3]" title="Click to close image, click and drag to move. Use arrow keys for next and previous." /><i>(<label for="inputL3" title="Click to close image, click and drag to move. Use arrow keys for next and previous.">Click to close image, click...</label>)</i></br>
+                                <input type="text" size="60" name="inputL4" value="$hs4wp_langtext[4]" /><i>(<label for="inputL4">Expand to actual size (f)</label>)</i></br>
+                                <input type="text" size="60" name="inputL5" value="$hs4wp_langtext[5]" /><i>(<label for="inputL5">Previous</label>)</i></br>
+                                <input type="text" size="60" name="inputL6" value="$hs4wp_langtext[6]" /><i>(<label for="inputL6">Next</label>)</i></br>
+                                <input type="text" size="60" name="inputL7" value="$hs4wp_langtext[7]" /><i>(<label for="inputL7">Close</label>)</i></br>
+                                <input type="text" size="60" name="inputL8" value="$hs4wp_langtext[8]" /><i>(<label for="inputL8">Move</label>)</i></br>
+                                <input type="text" size="60" name="inputL9" value="$hs4wp_langtext[9]" /><i>(<label for="inputL9">Close (esc)</label>)</i></br>
+                                <input type="text" size="60" name="inputL10" value="$hs4wp_langtext[10]" /><i>(<label for="inputL10">Resize</label>)</i></br>
+                                <input type="text" size="60" name="inputL11" value="$hs4wp_langtext[11]" /><i>(<label for="inputL11">Play</label>)</i></br>        
+                                <input type="text" size="60" name="inputL12" value="$hs4wp_langtext[12]" /><i>(<label for="inputL12">Play slideshow (spacebar)</label>)</i></br>
+                                <input type="text" size="60" name="inputL13" value="$hs4wp_langtext[13]" /><i>(<label for="inputL13">Pause</label>)</i></br>
+                                <input type="text" size="60" name="inputL14" value="$hs4wp_langtext[14]" /><i>(<label for="inputL14">Pause slideshow (spacebar)</label>)</i></br>
+                                <input type="text" size="60" name="inputL15" value="$hs4wp_langtext[15]" /><i>(<label for="inputL15">Previous (arrow left)</label>)</i></br>
+                                <input type="text" size="60" name="inputL16" value="$hs4wp_langtext[16]" /><i>(<label for="inputL16">Next (arrow right)</label>)</i></br>
+                            </ul>
+                            <div class="submit"><input type="submit" name="Submit" value="Save options" /></div>        
+        
                             <h3>Advanced Options<span>[<a href="http://solariz.de/highslide-wordpress-reloaded#advanced" target="hs4wpHelp">help</a>]</span></h3>
                             <ul>
                             <div>
@@ -245,6 +335,18 @@ function hs4wp_options_page()
                                 <label for="Acheck3">Disable the Highslide Media Icon.<br/>
                                 <small>Since 1.14 this Plugin insert a small Media Icon into the WP-WYSIWYG Editor, by checking this you can disable this icon.</small></label>
                             </div>
+                            <br/>
+                            <div>
+                                <input id="Acheck4" type="checkbox" name="useFullJS" $useFullJS />
+                                <label for="Acheck4">Use uncompressed JS & CSS instead of the minified version<br/>
+                                <small>Should be applied only if some JS / CSS problems occur.</small></label>
+                            </div>
+                            <br/>
+                            <div>
+                                <input id="zinput" type="text" size="4" name="zinput" value="$hszIndex" />
+                                <label for="zinput"> Z-Index of highslide window.<br/>
+                                <small>If neccesary raise this value to make Highslide appear on top. Empty for default (1001).</small></label>
+                            </div>         
                             <hr>
                             <div>
                                 <label for="input2">Use custom <b>highslide.css</b> ?</label><br/>
