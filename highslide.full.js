@@ -55,7 +55,7 @@ showCredits : true, // you can set this to false if you want
 creditsHref : 'http://highslide.com/',
 creditsTarget : '_self',
 enableKeyListener : true,
-openerTagNames : ['a'], // Add more to allow slideshow indexing
+openerTagNames : ['a', 'area'], // Add more to allow slideshow indexing
 transitions : [],
 transitionDuration: 250,
 dimmingOpacity: 0, // Lightbox style dimming background
@@ -65,6 +65,11 @@ allowWidthReduction : false,
 allowHeightReduction : true,
 preserveContent : true, // Preserve changes made to the content and position of HTML popups.
 objectLoadTime : 'before', // Load iframes 'before' or 'after' expansion.
+cacheAjax : true, // Cache ajax popups for instant display. Can be overridden for each popup.
+anchor : 'auto', // where the image expands from
+align : 'auto', // position in the client (overrides anchor)
+targetX: null, // the id of a target element
+targetY: null,
 dragByHeading: true,
 minWidth: 200,
 minHeight: 200,
@@ -137,6 +142,10 @@ expanders : [],
 overrides : [
 	'allowSizeReduction',
 	'useBox',
+	'anchor',
+	'align',
+	'targetX',
+	'targetY',
 	'outlineType',
 	'outlineWhileAnimating',
 	'captionId',
@@ -163,7 +172,9 @@ overrides : [
 	'preserveContent',
 	'maincontentId',
 	'maincontentText',
-	'maincontentEval',	
+	'maincontentEval',
+	'objectType',	
+	'cacheAjax',	
 	'objectWidth',
 	'objectHeight',
 	'objectLoadTime',	
@@ -196,6 +207,9 @@ slideshows : [],
 
 pendingOutlines : {},
 sleeping : [],
+preloadTheseAjax : [],
+cacheBindings : [],
+cachedGets : {},
 clones : {},
 onReady: [],
 uaVersion: /Trident\/4\.0/.test(navigator.userAgent) ? 8 :
@@ -294,6 +308,16 @@ getPageSize : function () {
 },
 
 getPosition : function(el)	{
+	if (/area/i.test(el.tagName)) {
+		var imgs = document.getElementsByTagName('img');
+		for (var i = 0; i < imgs.length; i++) {
+			var u = imgs[i].useMap;
+			if (u && u.replace(/^.*?#/, '') == el.parentNode.name) {
+				el = imgs[i];
+				break;
+			}
+		}
+	}
 	var p = { x: el.offsetLeft, y: el.offsetTop };
 	while (el.offsetParent)	{
 		el = el.offsetParent;
@@ -365,8 +389,10 @@ setClickEvents : function () {
 		if (type && !els[i].hsHasSetClick) {
 			(function(){
 				var t = type;
+				if (hs.fireEvent(hs, 'onSetClickEvent', { element: els[i], type: t })) {
 					els[i].onclick =(type == 'image') ?function() { return hs.expand(this) }:
 						function() { return hs.htmlExpand(this, { objectType: t } );};
+				}
 			})();
 			els[i].hsHasSetClick = true;	
 		}
@@ -375,7 +401,45 @@ setClickEvents : function () {
 },
 isUnobtrusiveAnchor: function(el) {
 	if (el.rel == 'highslide') return 'image';
+	else if (el.rel == 'highslide-ajax') return 'ajax';
+	else if (el.rel == 'highslide-iframe') return 'iframe';
 	else if (el.rel == 'highslide-swf') return 'swf';
+},
+
+getCacheBinding : function (a) {
+	for (var i = 0; i < hs.cacheBindings.length; i++) {
+		if (hs.cacheBindings[i][0] == a) {
+			var c = hs.cacheBindings[i][1];
+			hs.cacheBindings[i][1] = c.cloneNode(1);
+			return c;
+		}
+	}
+	return null;
+},
+
+preloadAjax : function (e) {
+	var arr = hs.getAnchors();
+	for (var i = 0; i < arr.htmls.length; i++) {
+		var a = arr.htmls[i];
+		if (hs.getParam(a, 'objectType') == 'ajax' && hs.getParam(a, 'cacheAjax'))
+			hs.push(hs.preloadTheseAjax, a);
+	}
+	
+	hs.preloadAjaxElement(0);
+},
+
+preloadAjaxElement : function (i) {
+	if (!hs.preloadTheseAjax[i]) return;
+	var a = hs.preloadTheseAjax[i];
+	var cache = hs.getNode(hs.getParam(a, 'contentId'));
+	if (!cache) cache = hs.getSelfRendered();
+	var ajax = new hs.Ajax(a, cache, 1);	
+   	ajax.onError = function () { };
+   	ajax.onLoad = function () {
+   		hs.push(hs.cacheBindings, [a, cache]);
+   		hs.preloadAjaxElement(i + 1);
+   	};
+   	ajax.run();
 },
 
 focusTopmost : function() {
@@ -436,6 +500,7 @@ dim : function(exp) {
 				className: 'highslide-dimming highslide-viewport-size',
 				owner: '',
 				onclick: function() {
+					if (hs.fireEvent(hs, 'onDimmerClick'))
 					
 						hs.close();
 				}
@@ -507,6 +572,7 @@ keyHandler : function(e) {
 	if (!e) e = window.event;
 	if (!e.target) e.target = e.srcElement; // ie
 	if (typeof e.target.form != 'undefined') return true; // form element has focus
+	if (!hs.fireEvent(hs, 'onKeyDown', e)) return true;
 	var exp = hs.getExpander();
 	
 	var op = null;
@@ -613,6 +679,9 @@ reOrder : function () {
 	for (var i = 0; i < hs.expanders.length; i++)
 		if (hs.expanders[i] && hs.expanders[i].isExpanded) hs.focusTopmost();
 },
+fireEvent : function (obj, evt, args) {
+	return obj && obj[evt] ? (obj[evt](obj, args) !== false) : true;
+},
 
 mouseClickHandler : function(e) 
 {	
@@ -668,11 +737,17 @@ mouseClickHandler : function(e)
 			var hasDragged = hs.dragArgs.hasDragged;
 			
 			if (!hasDragged &&!hs.hasFocused && !/(move|resize)/.test(hs.dragArgs.type)) {
+				if (hs.fireEvent(exp, 'onImageClick'))
 				exp.close();
 			} 
 			else if (hasDragged || (!hasDragged && hs.hasHtmlExpanders)) {
 				hs.dragArgs.exp.doShowHide('hidden');
 			}
+			
+			if (hs.dragArgs.exp.releaseMask) 
+				hs.dragArgs.exp.releaseMask.style.display = 'none';
+			
+			if (hasDragged) hs.fireEvent(hs.dragArgs.exp, 'onDrop', hs.dragArgs);
 			hs.hasFocused = false;
 			hs.dragArgs = null;
 		
@@ -688,6 +763,15 @@ dragHandler : function(e)
 	if (!hs.dragArgs) return true;
 	if (!e) e = window.event;
 	var a = hs.dragArgs, exp = a.exp;
+	if (exp.iframe) {		
+		if (!exp.releaseMask) exp.releaseMask = hs.createElement('div', null, 
+			{ position: 'absolute', width: exp.x.size+'px', height: exp.y.size+'px', 
+				left: exp.x.cb+'px', top: exp.y.cb+'px', zIndex: 4,	background: (hs.ie ? 'white' : 'none'), 
+				opacity: 0.01 }, 
+			exp.wrapper, true);
+		if (exp.releaseMask.style.display == 'none')
+			exp.releaseMask.style.display = '';
+	}
 	
 	a.dX = e.clientX - a.clickX;
 	a.dY = e.clientY - a.clickY;	
@@ -697,6 +781,7 @@ dragHandler : function(e)
 		|| (distance > (hs.dragSensitivity || 5));
 	
 	if (a.hasDragged && e.clientX > 5 && e.clientY > 5) {
+		if (!hs.fireEvent(exp, 'onDrag', a)) return false;
 		
 		if (a.type == 'resize') exp.resize(a);
 		else {
@@ -718,6 +803,7 @@ wrapperMouseHandler : function (e) {
 		if (!exp.isExpanded) return;
 		if (!exp || !e.relatedTarget || hs.getExpander(e.relatedTarget, true) == exp 
 			|| hs.dragArgs) return;
+		hs.fireEvent(exp, over ? 'onMouseOver' : 'onMouseOut', e);
 		for (var i = 0; i < exp.overlays.length; i++) (function() {
 			var o = hs.$('hsId'+ exp.overlays[i]);
 			if (o && o.hideOnMouseOut) {
@@ -789,6 +875,7 @@ init : function () {
 	
 		hs.getPageSize();
 		hs.ieLt7 = hs.ie && hs.uaVersion < 7;
+		hs.ie6SSL = hs.ieLt7 && location.protocol == 'https:';
 		for (var x in hs.langDefaults) {
 			if (typeof hs[x] != 'undefined') hs.lang[x] = hs[x];
 			else if (typeof hs.lang[x] == 'undefined' && typeof hs.langDefaults[x] != 'undefined') 
@@ -837,10 +924,14 @@ init : function () {
 		Math.easeInQuad = function (t, b, c, d) {
 			return c*(t/=d)*t + b;
 		};
+		Math.easeOutQuad = function (t, b, c, d) {
+			return -c *(t/=d)*(t-2) + b;
+		};
 		
 		hs.hideSelects = hs.ieLt7;
 		hs.hideIframes = ((window.opera && hs.uaVersion < 9) || navigator.vendor == 'KDE' 
 			|| (hs.ie && hs.uaVersion < 5.5));
+		hs.fireEvent(this, 'onActivate');
 	}
 },
 ready : function() {
@@ -850,7 +941,7 @@ ready : function() {
 },
 
 updateAnchors : function() {
-	var el, els, all = [], images = [],groups = {}, re;
+	var el, els, all = [], images = [], htmls = [],groups = {}, re;
 		
 	for (var i = 0; i < hs.openerTagNames.length; i++) {
 		els = document.getElementsByTagName(hs.openerTagNames[i]);
@@ -860,13 +951,14 @@ updateAnchors : function() {
 			if (re) {
 				hs.push(all, el);
 				if (re[0] == 'hs.expand') hs.push(images, el);
+				else if (re[0] == 'hs.htmlExpand') hs.push(htmls, el);
 				var g = hs.getParam(el, 'slideshowGroup') || 'none';
 				if (!groups[g]) groups[g] = [];
 				hs.push(groups[g], el);
 			}
 		}
 	}
-	hs.anchors = { all: all, groups: groups, images: images };
+	hs.anchors = { all: all, groups: groups, images: images, htmls: htmls };
 	return hs.anchors;
 	
 },
@@ -1148,6 +1240,11 @@ calcExpanded: function() {
 	var exp = this.exp;
 	this.justify = 'auto';
 	
+	// get alignment
+	if (exp.align == 'center') this.justify = 'center';
+	else if (new RegExp(this.lt).test(exp.anchor)) this.justify = null;
+	else if (new RegExp(this.rb).test(exp.anchor)) this.justify = 'max';
+	
 	
 	// size and position
 	this.pos = this.tpos - this.cb + this.tb;
@@ -1163,6 +1260,7 @@ calcExpanded: function() {
 		this.imgSize = this.full;
 	}
 	if (this.dim == 'x' && hs.padToMinWidth) this.minSize = exp.minWidth;
+	this.target = exp['target'+ this.dim.toUpperCase()];
 	this.marginMin = hs['margin'+ this.uclt];
 	this.scroll = hs.page['scroll'+ this.uclt];
 	this.clientSize = hs.page[this.wh];
@@ -1179,6 +1277,10 @@ setSize: function(i) {
 	exp.content.style[this.wh] = i +'px';
 	exp.wrapper.style[this.wh] = this.get('wsize') +'px';
 	if (exp.outline) exp.outline.setPosition();
+	if (exp.releaseMask) exp.releaseMask.style[this.wh] = i +'px';
+	if (this.dim == 'y' && exp.iDoc && exp.body.style.height != 'auto') try {
+		exp.iDoc.body.style.overflow = 'auto';
+	} catch (e) {}
 	if (exp.isHtml) {
 		var d = exp.scrollerDiv;
 		if (this.sizeDiff === undefined)
@@ -1234,6 +1336,7 @@ hs.Expander = function(a, params, custom, contentType) {
 	var el = (params && params.thumbnailId) ? hs.$(params.thumbnailId) : a;
 	el = this.thumb = el.getElementsByTagName('img')[0] || el;
 	this.thumbsUserSetId = el.id || a.id;
+	if (!hs.fireEvent(this, 'onInit')) return true;
 	
 	// check if already open
 	for (var i = 0; i < hs.expanders.length; i++) {
@@ -1265,6 +1368,7 @@ hs.Expander = function(a, params, custom, contentType) {
 	x.calcThumb();
 	var y = this.y = new hs.Dimension(this, 'y');
 	y.calcThumb();
+	if (/area/i.test(el.tagName)) this.getImageMapAreaCorrection(el);
 	this.wrapper = hs.createElement(
 		'div', {
 			id: 'highslide-wrapper-'+ this.key,
@@ -1322,6 +1426,9 @@ showLoading : function() {
 	this.loading.onclick = function() {
 		exp.cancelLoading();
 	};
+	
+	
+	if (!hs.fireEvent(this, 'onShowLoading')) return;
 	var exp = this, 
 		l = this.x.get('loadingPos') +'px',
 		t = this.y.get('loadingPos') +'px';
@@ -1362,7 +1469,11 @@ imageCreate : function() {
 	this.showLoading();
 },
 
-htmlCreate : function () { 
+htmlCreate : function () {
+	if (!hs.fireEvent(this, 'onBeforeGetContent')) return;
+	
+	this.content = hs.getCacheBinding(this.a);
+	if (!this.content) 
 		this.content = hs.getNode(this.contentId);
 	if (!this.content) 
 		this.content = hs.getSelfRendered();
@@ -1372,6 +1483,7 @@ htmlCreate : function () {
 		if (body) body.appendChild(this.maincontent);
 		this.maincontent.style.display = 'block';
 	}
+	hs.fireEvent(this, 'onAfterGetContent');
 	
 	var innerContent = this.innerContent = this.content;
 	
@@ -1409,6 +1521,24 @@ htmlCreate : function () {
 	});
 	if (innerContent.offsetWidth < this.minWidth)
 		innerContent.style.width = this.minWidth +'px';
+		
+	
+    
+	if (this.objectType == 'ajax' && !hs.getCacheBinding(this.a)) {
+		this.showLoading();
+    	var exp = this;
+    	var ajax = new hs.Ajax(this.a, innerContent);
+		ajax.src = this.src;
+    	ajax.onLoad = function () {	if (hs.expanders[exp.key]) exp.contentLoaded(); };
+    	ajax.onError = function () { location.href = exp.src; };
+    	ajax.run();
+	}
+    else
+    
+    if (this.objectType == 'iframe' && this.objectLoadTime == 'before') {
+		this.writeExtendedContent();
+	}
+    else
     	this.contentLoaded();
 },
 
@@ -1424,6 +1554,7 @@ contentLoaded : function() {
 		if (this.loading) {
 			hs.setStyles(this.loading, { top: '-9999px' });
 			this.loading = null;
+			hs.fireEvent(this, 'onHideLoading');
 		}
 		if (this.isImage) {	
 			x.full = this.content.width;
@@ -1505,6 +1636,25 @@ writeExtendedContent : function () {
 	if (this.hasExtendedContent) return;
 	var exp = this;
 	this.body = hs.getElementByClass(this.innerContent, 'DIV', 'highslide-body');
+	if (this.objectType == 'iframe') {
+		this.showLoading();
+		var ruler = hs.clearing.cloneNode(1);
+		this.body.appendChild(ruler);
+		this.newWidth = this.innerContent.offsetWidth;
+		if (!this.objectWidth) this.objectWidth = ruler.offsetWidth;
+		var hDiff = this.innerContent.offsetHeight - this.body.offsetHeight,
+			h = this.objectHeight || hs.page.height - hDiff - hs.marginTop - hs.marginBottom,
+			onload = this.objectLoadTime == 'before' ? 
+				' onload="if (hs.expanders['+ this.key +']) hs.expanders['+ this.key +'].contentLoaded()" ' : '';
+		this.body.innerHTML += '<iframe name="hs'+ (new Date()).getTime() +'" frameborder="0" key="'+ this.key +'" '
+			+' style="width:'+ this.objectWidth +'px; height:'+ h +'px" '
+			+ onload +' src="'+ this.src +'" ></iframe>';
+		this.ruler = this.body.getElementsByTagName('div')[0];
+		this.iframe = this.body.getElementsByTagName('iframe')[0];
+		
+		if (this.objectLoadTime == 'after') this.correctIframeSize();
+		
+	}
 	if (this.objectType == 'swf') {
 		this.body.id = this.body.id || 'hs-flash-id-' + this.key;
 		var a = this.swfOptions;
@@ -1516,6 +1666,9 @@ writeExtendedContent : function () {
 	this.hasExtendedContent = true;
 },
 htmlGetSize : function() {
+	if (this.iframe && !this.objectHeight) { // loadtime before
+		this.iframe.style.height = this.body.style.height = this.getIframePageHeight() +'px';
+	}
 	this.innerContent.appendChild(hs.clearing);
 	if (!this.x.full) this.x.full = this.innerContent.offsetWidth;
     this.y.full = this.innerContent.offsetHeight;
@@ -1525,6 +1678,44 @@ htmlGetSize : function() {
 	}
 	hs.setStyles( this.wrapper, { position: 'absolute',	padding: '0'});
 	hs.setStyles( this.content, { width: this.x.t +'px', height: this.y.t +'px'});
+	
+},
+
+getIframePageHeight : function() {
+	var h;
+	try {
+		var doc = this.iDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
+		var clearing = doc.createElement('div');
+		clearing.style.clear = 'both';
+		doc.body.appendChild(clearing);
+		h = clearing.offsetTop;
+		if (hs.ie) h += parseInt(doc.body.currentStyle.marginTop) 
+			+ parseInt(doc.body.currentStyle.marginBottom) - 1;
+	} catch (e) { // other domain
+		h = 300;
+	}
+	return h;
+},
+correctIframeSize : function () {
+	var wDiff = this.innerContent.offsetWidth - this.ruler.offsetWidth;
+	hs.discardElement(this.ruler);
+	if (wDiff < 0) wDiff = 0;
+	
+	var hDiff = this.innerContent.offsetHeight - this.iframe.offsetHeight;
+	if (this.iDoc && !this.objectHeight && !this.height && this.y.size == this.y.full) try {
+		this.iDoc.body.style.overflow = 'hidden';
+	} catch (e) {}
+	hs.setStyles(this.iframe, { 
+		width: Math.abs(this.x.size - wDiff) +'px', 
+		height: Math.abs(this.y.size - hDiff) +'px'
+	});
+    hs.setStyles(this.body, { 
+		width: this.iframe.style.width, 
+    	height: this.iframe.style.height
+	});
+    	
+    this.scrollingContent = this.iframe;
+    this.scrollerDiv = this.scrollingContent;
 	
 },
 htmlSizeOperations : function () {
@@ -1573,6 +1764,7 @@ htmlSizeOperations : function () {
     	this.scrollingContent = node;
     	this.scrollerDiv = this.scrollingContent;
 	}
+    if (this.iframe && this.objectLoadTime == 'before') this.correctIframeSize();
     if (!this.scrollingContent && this.y.size < this.mediumContent.offsetHeight) this.scrollerDiv = this.content;
 	
 	if (this.scrollerDiv == this.content && !this.allowWidthReduction && !/(iframe|swf)/.test(this.objectType)) {
@@ -1584,12 +1776,52 @@ htmlSizeOperations : function () {
 	}
 },
 
+getImageMapAreaCorrection : function(area) {
+	var c = area.coords.split(',');
+	for (var i = 0; i < c.length; i++) c[i] = parseInt(c[i]);
+	
+	if (area.shape.toLowerCase() == 'circle') {
+		this.x.tpos += c[0] - c[2];
+		this.y.tpos += c[1] - c[2];
+		this.x.t = this.y.t = 2 * c[2];
+	} else {
+		var maxX, maxY, minX = maxX = c[0], minY = maxY = c[1];
+		for (var i = 0; i < c.length; i++) {
+			if (i % 2 == 0) {
+				minX = Math.min(minX, c[i]);
+				maxX = Math.max(maxX, c[i]);
+			} else {
+				minY = Math.min(minY, c[i]);
+				maxY = Math.max(maxY, c[i]);
+			}
+		}
+		this.x.tpos += minX;
+		this.x.t = maxX - minX;
+		this.y.tpos += minY;
+		this.y.t = maxY - minY;
+	}
+},
 justify : function (p, moveOnly) {
 	var tgtArr, tgt = p.target, dim = p == this.x ? 'x' : 'y';
+	
+	if (tgt && tgt.match(/ /)) {
+		tgtArr = tgt.split(' ');
+		tgt = tgtArr[0];
+	}
+	if (tgt && hs.$(tgt)) {
+		p.pos = hs.getPosition(hs.$(tgt))[dim];
+		if (tgtArr && tgtArr[1] && tgtArr[1].match(/^[-]?[0-9]+px$/)) 
+			p.pos += parseInt(tgtArr[1]);
+		if (p.size < p.minSize) p.size = p.minSize;
+		
+	} else if (p.justify == 'auto' || p.justify == 'center') {
 	
 		var hasMovedMin = false;
 		
 		var allowReduce = p.exp.allowSizeReduction;
+		if (p.justify == 'center')
+			p.pos = Math.round(p.scroll + (p.clientSize + p.marginMin - p.marginMax - p.get('wsize')) / 2);
+		else
 			p.pos = Math.round(p.pos - ((p.get('wsize') - p.t) / 2));
 		if (p.pos < p.scroll + p.marginMin) {
 			p.pos = p.scroll + p.marginMin;
@@ -1615,6 +1847,10 @@ justify : function (p, moveOnly) {
 			allowReduce = false;
 		}
 		
+	
+	} else if (p.justify == 'max') {
+		p.pos = Math.floor(p.pos - p.size + p.t);
+	}
 	
 		
 	if (p.pos < p.marginMin) {
@@ -1689,9 +1925,20 @@ fitOverlayBox : function(ratio, changed) {
 	return changed;
 },
 
+reflow : function () {
+	if (this.scrollerDiv) {
+		var h = /iframe/i.test(this.scrollerDiv.tagName) ? (this.getIframePageHeight() + 1) +'px' : 'auto';
+		if (this.body) this.body.style.height = h;
+		this.scrollerDiv.style.height = h;
+		this.y.setSize(this.innerContent.offsetHeight);
+	}
+},
+
 show : function () {
 	var x = this.x, y = this.y;
 	this.doShowHide('hidden');
+	hs.fireEvent(this, 'onBeforeExpand');
+	if (this.slideshow && this.slideshow.thumbstrip) this.slideshow.thumbstrip.selectThumb();
 	
 	// Apply size change
 	this.changeSize(
@@ -1999,6 +2246,17 @@ afterExpand : function() {
 	this.focus();
 	
 	if (this.isHtml && this.objectLoadTime == 'after') this.writeExtendedContent();
+	if (this.iframe) {
+		try {
+			var exp = this,
+				doc = this.iframe.contentDocument || this.iframe.contentWindow.document;
+			hs.addEventListener(doc, 'mousedown', function () {
+				if (hs.focusKey != exp.key) exp.focus();
+			});
+		} catch(e) {}
+		if (hs.ie && typeof this.isClosing != 'boolean') // first open 
+			this.iframe.style.width = (this.objectWidth - 1) +'px'; // hasLayout
+	}
 	if (this.dimmingOpacity) hs.dim(this);
 	if (hs.upcoming && hs.upcoming == this.a) hs.upcoming = null;
 	this.prepareNextOutline();
@@ -2006,6 +2264,7 @@ afterExpand : function() {
 	this.mouseIsOver = this.x.pos < mX && mX < this.x.pos + this.x.get('wsize')
 		&& this.y.pos < mY && mY < this.y.pos + this.y.get('wsize');	
 	if (this.overlayBox) this.showOverlays();
+	hs.fireEvent(this, 'onAfterExpand');
 	
 },
 
@@ -2076,6 +2335,7 @@ initSlideshow : function() {
 			zIndex: 5
 		}));
 	}
+	if (ss.thumbstrip) ss.thumbstrip.add(this);
 	if (!this.last && this.autoplay) ss.play(true);
 	if (ss.autoplay) {
 		ss.autoplay = setTimeout(function() {
@@ -2090,6 +2350,7 @@ cancelLoading : function() {
 	if (hs.upcoming == this.a) hs.upcoming = null;
 	hs.undim(this.key);
 	if (this.loading) hs.loading.style.left = '-9999px';
+	hs.fireEvent(this, 'onHideLoading');
 },
 
 writeCredits : function () {
@@ -2111,6 +2372,8 @@ writeCredits : function () {
 getInline : function(types, addOverlay) {
 	for (var i = 0; i < types.length; i++) {
 		var type = types[i], s = null;
+		if (type == 'caption' && !hs.fireEvent(this, 'onBeforeGetCaption')) return;
+		else if (type == 'heading' && !hs.fireEvent(this, 'onBeforeGetHeading')) return;
 		if (!this[type +'Id'] && this.thumbsUserSetId)  
 			this[type +'Id'] = type +'-for-'+ this.thumbsUserSetId;
 		if (this[type +'Id']) this[type] = hs.getNode(this[type +'Id']);
@@ -2211,7 +2474,8 @@ focus : function() {
 			if (blurExp.isImage) {
 				blurExp.content.style.cursor = hs.ie ? 'hand' : 'pointer';
 				blurExp.content.title = hs.lang.focusTitle;	
-			}
+			}	
+			hs.fireEvent(blurExp, 'onBlur');
 		}
 	}
 	
@@ -2230,6 +2494,7 @@ focus : function() {
 	}
 	hs.focusKey = this.key;	
 	hs.addEventListener(document, window.opera ? 'keypress' : 'keydown', hs.keyHandler);	
+	hs.fireEvent(this, 'onFocus');	
 },
 moveTo: function(x, y) {
 	this.x.setPos(x);
@@ -2258,6 +2523,7 @@ close : function() {
 		hs.getExpander(hs.upcoming).cancelLoading();
 		hs.upcoming = null;
 	}
+	if (!hs.fireEvent(this, 'onBeforeClose')) return;
 	this.isClosing = true;
 	if (this.slideshow && !hs.upcoming) this.slideshow.pause();
 	
@@ -2300,12 +2566,15 @@ htmlPrepareClose : function() {
 },
 
 destroyObject : function () {
+	if (hs.ie && this.iframe)
+		try { this.iframe.contentWindow.document.body.innerHTML = ''; } catch (e) {}
 	if (this.objectType == 'swf') swfobject.removeSWF(this.body.id);
 	this.body.innerHTML = '';
 },
 
 sleep : function() {
 	if (this.outline) this.outline.table.style.display = 'none';
+	this.releaseMask = null;
 	this.wrapper.style.display = 'none';
 	this.isExpanded = false;
 	hs.push(hs.sleeping, this);
@@ -2344,6 +2613,7 @@ createOverlay : function (o) {
 	if (typeof el == 'string') el = hs.getNode(el);
 	if (o.html) el = hs.createElement('div', { innerHTML: o.html });
 	if (!el || typeof el == 'string') return;
+	if (!hs.fireEvent(this, 'onCreateOverlay', { overlay: el })) return;
 	el.style.display = 'block';
 	o.hsId = o.hsId || o.overlayId; 
 	if (this.transitions[1] == 'crossfade' && this.reuseOverlay(o, el)) return;
@@ -2462,6 +2732,8 @@ positionOverlay : function(overlay) {
 getOverlays : function() {	
 	this.getInline(['heading', 'caption'], true);
 	this.getNumber();
+	if (this.caption) hs.fireEvent(this, 'onAfterGetCaption');
+	if (this.heading) hs.fireEvent(this, 'onAfterGetHeading');
 	if (this.heading && this.dragByHeading) this.heading.className += ' highslide-move';
 	if (hs.showCredits) this.writeCredits();
 	for (var i = 0; i < hs.overlays.length; i++) {
@@ -2584,6 +2856,7 @@ createFullExpand : function () {
 			className: 'highslide-full-expand'
 		}
 	);
+	if (!hs.fireEvent(this, 'onCreateFullExpand')) return;
 	
 	this.createOverlay({ 
 		overlayId: this.fullExpandLabel, 
@@ -2595,6 +2868,7 @@ createFullExpand : function () {
 
 doFullExpand : function () {
 	try {
+		if (!hs.fireEvent(this, 'onDoFullExpand')) return;
 		if (this.fullExpandLabel) hs.discardElement(this.fullExpandLabel);
 		
 		this.focus();
@@ -2631,10 +2905,103 @@ afterClose : function () {
 	if (!hs.viewport.childNodes.length) hs.viewport.style.display = 'none';
 	
 	if (this.dimmingOpacity) hs.undim(this.key);
+	hs.fireEvent(this, 'onAfterClose');
 	hs.expanders[this.key] = null;		
 	hs.reOrder();
 }
 
+};
+
+
+// hs.Ajax object prototype
+hs.Ajax = function (a, content, pre) {
+	this.a = a;
+	this.content = content;
+	this.pre = pre;
+};
+
+hs.Ajax.prototype = {
+run : function () {
+	var xhr;
+	if (!this.src) this.src = hs.getSrc(this.a);
+	if (this.src.match('#')) {
+		var arr = this.src.split('#');
+		this.src = arr[0];
+		this.id = arr[1];
+	}
+	if (hs.cachedGets[this.src]) {
+		this.cachedGet = hs.cachedGets[this.src];
+		if (this.id) this.getElementContent();
+		else this.loadHTML();
+		return;
+	}
+	try { xhr = new XMLHttpRequest(); }
+	catch (e) {
+		try { xhr = new ActiveXObject("Msxml2.XMLHTTP"); }
+		catch (e) {
+			try { xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+			catch (e) { this.onError(); }
+		}
+	}
+	var pThis = this; 
+	xhr.onreadystatechange = function() {
+		if(pThis.xhr.readyState == 4) {
+			if (pThis.id) pThis.getElementContent();
+			else pThis.loadHTML();
+		}
+	};
+	var src = this.src;
+	this.xhr = xhr;
+	if (hs.forceAjaxReload) 
+		src = src.replace(/$/, (/\?/.test(src) ? '&' : '?') +'dummy='+ (new Date()).getTime());
+	xhr.open('GET', src, true);
+	xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.send(null);
+},
+
+getElementContent : function() {
+	hs.init();
+	var attribs = window.opera || hs.ie6SSL ? { src: 'about:blank' } : null;
+	
+	this.iframe = hs.createElement('iframe', attribs, 
+		{ position: 'absolute', top: '-9999px' }, hs.container);
+		
+	this.loadHTML();
+},
+
+loadHTML : function() {
+	var s = this.cachedGet || this.xhr.responseText,
+		regBody;
+	if (this.pre) hs.cachedGets[this.src] = s;
+	if (!hs.ie || hs.uaVersion >= 5.5) {
+		s = s.replace(new RegExp('<link[^>]*>', 'gi'), '')
+			.replace(new RegExp('<script[^>]*>.*?</script>', 'gi'), '');
+		if (this.iframe) {
+			var doc = this.iframe.contentDocument;
+			if (!doc && this.iframe.contentWindow) doc = this.iframe.contentWindow.document;
+			if (!doc) { // Opera
+				var pThis = this;
+				setTimeout(function() {	pThis.loadHTML(); }, 25);
+				return;
+			}
+			doc.open();
+			doc.write(s);
+			doc.close();
+			try { s = doc.getElementById(this.id).innerHTML; } catch (e) {
+				try { s = this.iframe.document.getElementById(this.id).innerHTML; } catch (e) {} // opera
+			}
+			hs.discardElement(this.iframe);
+		} else {
+			regBody = /(<body[^>]*>|<\/body>)/ig;
+			if (regBody.test(s)) s = s.split(regBody)[hs.ie ? 1 : 2];
+			
+		}
+	}
+	hs.getElementByClass(this.content, 'DIV', 'highslide-body').innerHTML = s;
+	this.onLoad();
+	for (var x in this) this[x] = null;
+}
 };
 
 
@@ -2643,6 +3010,7 @@ hs.Slideshow = function (expKey, options) {
 	this.expKey = expKey;
 	for (var x in options) this[x] = options[x];
 	if (this.useControls) this.getControls();
+	if (this.thumbstrip) this.thumbstrip = hs.Thumbstrip(this);
 };
 hs.Slideshow.prototype = {
 getControls: function() {
@@ -2729,6 +3097,135 @@ close: function() {
 	hs.close(this.btn.close);
 }
 };
+hs.Thumbstrip = function(slideshow) {
+	function add (exp) {
+		hs.extend(options || {}, {
+			overlayId: dom,
+			hsId: 'thumbstrip',
+			className: 'highslide-thumbstrip-'+ mode +'-overlay ' + (options.className || '')
+		});
+		if (hs.ieLt7) options.fade = 0;
+		exp.createOverlay(options);
+		hs.setStyles(dom.parentNode, { overflow: 'hidden' });
+	};
+	
+	function scroll (delta) {	
+		selectThumb(undefined, Math.round(delta * dom[isX ? 'offsetWidth' : 'offsetHeight'] * 0.7));
+	};
+	
+	function selectThumb (i, scrollBy) {
+		if (i === undefined) for (var j = 0; j < group.length; j++) {
+			if (group[j] == hs.expanders[slideshow.expKey].a) {
+				i = j;
+				break;
+			}
+		}
+		if (i === undefined) return;
+		var as = dom.getElementsByTagName('a'),
+			active = as[i],
+			cell = active.parentNode,
+			left = isX ? 'Left' : 'Top',
+			right = isX ? 'Right' : 'Bottom',
+			width = isX ? 'Width' : 'Height',
+			offsetLeft = 'offset' + left,
+			offsetWidth = 'offset' + width,
+			overlayWidth = div.parentNode.parentNode[offsetWidth],
+			minTblPos = overlayWidth - table[offsetWidth],
+			curTblPos = parseInt(table.style[isX ? 'left' : 'top']) || 0,
+			tblPos = curTblPos,
+			mgnRight = 20;
+		if (scrollBy !== undefined) {
+			tblPos = curTblPos - scrollBy;
+			
+			if (minTblPos > 0) minTblPos = 0;
+			if (tblPos > 0) tblPos = 0;
+			if (tblPos < minTblPos) tblPos = minTblPos;
+			
+	
+		} else {
+			for (var j = 0; j < as.length; j++) as[j].className = '';
+			active.className = 'highslide-active-anchor';
+			var activeLeft = i > 0 ? as[i - 1].parentNode[offsetLeft] : cell[offsetLeft],
+				activeRight = cell[offsetLeft] + cell[offsetWidth] + 
+					(as[i + 1] ? as[i + 1].parentNode[offsetWidth] : 0);
+			if (activeRight > overlayWidth - curTblPos) tblPos = overlayWidth - activeRight;
+			else if (activeLeft < -curTblPos) tblPos = -activeLeft;
+		}
+		var markerPos = cell[offsetLeft] + (cell[offsetWidth] - marker[offsetWidth]) / 2 + tblPos;
+		hs.animate(table, isX ? { left: tblPos } : { top: tblPos }, null, 'easeOutQuad');
+		hs.animate(marker, isX ? { left: markerPos } : { top: markerPos }, null, 'easeOutQuad');
+		scrollUp.style.display = tblPos < 0 ? 'block' : 'none';
+		scrollDown.style.display = (tblPos > minTblPos)  ? 'block' : 'none';
+		
+	};
+	
+
+	// initialize
+	var group = hs.anchors.groups[hs.expanders[slideshow.expKey].slideshowGroup || 'none'],
+		options = slideshow.thumbstrip,
+		mode = options.mode || 'horizontal',
+		floatMode = (mode == 'float'),
+		tree = floatMode ? ['div', 'ul', 'li', 'span'] : ['table', 'tbody', 'tr', 'td'],
+		isX = (mode == 'horizontal'),
+		dom = hs.createElement('div', {
+				className: 'highslide-thumbstrip highslide-thumbstrip-'+ mode,
+				innerHTML:
+					'<div class="highslide-thumbstrip-inner">'+
+					'<'+ tree[0] +'><'+ tree[1] +'></'+ tree[1] +'></'+ tree[0] +'></div>'+
+					'<div class="highslide-scroll-up"><div></div></div>'+
+					'<div class="highslide-scroll-down"><div></div></div>'+
+					'<div class="highslide-marker"><div></div></div>'
+			}, {
+				display: 'none'
+			}, hs.container),
+		domCh = dom.childNodes,
+		div = domCh[0],
+		scrollUp = domCh[1],
+		scrollDown = domCh[2],
+		marker = domCh[3],
+		table = div.firstChild,
+		tbody = dom.getElementsByTagName(tree[1])[0],
+		tr;
+	for (var i = 0; i < group.length; i++) {
+		if (i == 0 || !isX) tr = hs.createElement(tree[2], null, null, tbody);
+		(function(){
+			var a = group[i],
+				cell = hs.createElement(tree[3], null, null, tr),
+				pI = i;
+			hs.createElement('a', {
+				href: a.href,
+				onclick: function() {
+					hs.getExpander(this).focus();
+					return hs.transit(a);
+				},
+				innerHTML: hs.stripItemFormatter ? hs.stripItemFormatter(a) : a.innerHTML
+			}, null, cell);
+		})();
+	}
+	if (!floatMode) {
+		scrollUp.onclick = function () { scroll(-1); };
+		scrollDown.onclick = function() { scroll(1); };
+		hs.addEventListener(tbody, document.onmousewheel !== undefined ? 
+				'mousewheel' : 'DOMMouseScroll', function(e) {        
+			var delta = 0;
+	        e = e || window.event;
+	        if (e.wheelDelta) {
+				delta = e.wheelDelta/120;
+				if (hs.opera) delta = -delta;
+	        } else if (e.detail) {
+				delta = -e.detail/3;
+	        }
+	        if (delta) scroll(-delta * 0.2);
+			if (e.preventDefault) e.preventDefault();
+			e.returnValue = false;
+		});
+	}
+	
+	return {
+		add: add,
+		selectThumb: selectThumb
+	}
+};
 hs.langDefaults = hs.lang;
 // history
 var HsExpander = hs.Expander;
@@ -2782,6 +3279,7 @@ hs.addEventListener(window, 'resize', function() {
 		var node = hs.viewport.childNodes[i],
 			exp = hs.getExpander(node);
 		exp.positionOverlay(node);
+		if (node.hsId == 'thumbstrip') exp.slideshow.thumbstrip.selectThumb();
 	}
 });
 hs.addEventListener(document, 'mousemove', function(e) {
@@ -2791,4 +3289,5 @@ hs.addEventListener(document, 'mousedown', hs.mouseClickHandler);
 hs.addEventListener(document, 'mouseup', hs.mouseClickHandler);
 hs.addEventListener(document, 'ready', hs.setClickEvents);
 hs.addEventListener(window, 'load', hs.preloadImages);
+hs.addEventListener(window, 'load', hs.preloadAjax);
 }
