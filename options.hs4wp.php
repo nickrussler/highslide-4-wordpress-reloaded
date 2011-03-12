@@ -5,7 +5,11 @@
 function hs4wp_options_page()
 {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_plugin_path;
+    
+    $mypage = add_management_page( 'myplugin', 'myplugin', 9, __FILE__, 'myplugin_admin_page' );
+    add_action( "admin_print_scripts-$mypage", 'hs4wp_prepare_adminheader' );
 
+    
 
     // If form was submitted
 	if (isset($_POST['submitted']))
@@ -196,7 +200,7 @@ function hs4wp_options_page()
                     <img src="$imgpath/help.png"><a href="http://solariz.de/highslide-wordpress-reloaded" target="_blank" style="text-decoration:none;"> Plugin Manual</a><br /><br />
                     <img src="$imgpath/donate.png"><a href="http://solariz.de/donate" target="_blank" style="text-decoration:none;"> How to Donate?</a> <br /><br />
                     <img src="$imgpath/star.png"><a href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/" target="_blank" style="text-decoration:none;"> Rate this plugin</a><br /><br />
-                    <a href="http://flattr.com/thing/116751/Plugin-Highslide-4-Wordpress-reloaded" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a>
+                    <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/"></a>
                   </ul>
         		<h3>The Author</h3>
                     <div class="infoBox">
@@ -224,10 +228,14 @@ function hs4wp_options_page()
                                   <label for="check0" style="$lic_style">I Agree to the License Agreement</label>
                               </div>
                             </ul>
-                            <h3>Like it ?</h3>
+                            <h3><b>PLEASE READ CAREFUL:</b></h3>
                             <ul>
                               <div>
-                              As the most Plugin writers I spent my sparetime to writing those plugins. I do not demand money for non commecial usage but if you like it you can do me a favour. Please <a href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/">rate the Plugin</a> at the official wordpress extension archive. If you want to donate something you find a info link on the right.
+                              Like the most plugin writers I spent my spare time to write those plugins, I do not demand on money but if you like this plugin fo please be fair and do me a little favour by a small donation (<a href="http://solariz.de/donate" target="_blank">how ? Information</a>). Thanks for any support, it helps to keep this plugin up to date and allows further development.
+                              <p><h4>Any Commercial use, it`s Donationware:</h4>
+                              Because nobody seems to care nowadays, again in short clear words: If you use this Plugin on a webpage with ANY kind of commercial background you need to Donate to use this plugin. No donation, no license, no usage allowed ! Thanks.
+                              </p>
+
                               </div>
                             </ul>
                             <h3>Options<span>[<a href="http://solariz.de/highslide-wordpress-reloaded#options" target="hs4wpHelp">help</a>]</span></h3>

@@ -63,7 +63,7 @@ function hs4wp_prepare_footer() {
         $hs_script_uri   = str_ireplace("http://".$_SERVER['HTTP_HOST'],"",$hs_script_uri);
     }
     $OUT = "<!-- HighSlide4Wordpress Footer JS Includes -->\n";
-    $OUT .= '<a href="http://solariz.de" title="Highslide for Wordpress" style="display:none">highslide wordpress</a>'."\n";
+    $OUT .= '<a href="http://solariz.de/highslide-wordpress-reloaded" title="Highslide for Wordpress" style="display:none">highslide for wordpress</a>'."\n";
     $OUT .= '<script type="text/javascript" src="'.$hs_script_uri.'"></script>';
     $OUT .= '<script type="text/javascript">'."\n";
     $OUT .= "hs.graphicsDir = '".$hs_graphics_uri."';\n";
@@ -179,26 +179,30 @@ function hs4wp_prepare_footer() {
     }
     // Custom language / translation option
     if( get_option('hs4wp_use_lang')=='on' ) {
-        $slideshow_delay    = get_option('hs4wp_langtext');
+        $cust_lang    = get_option('hs4wp_langtext');        
+        // Encoding
+        foreach ($cust_lang as $key => $value) {
+            $cust_lang[$key] = htmlentities($value,ENT_QUOTES,'UTF-8');
+        }
         $OUT .= "hs.lang = {";
-        if($slideshow_delay[0]) $OUT .= "loadingText : '".$slideshow_delay[0]."',\n";
-        if($slideshow_delay[1]) $OUT .= "loadingTitle : '".$slideshow_delay[1]."',\n";        
-        if($slideshow_delay[2]) $OUT .= "focusTitle : '".$slideshow_delay[2]."',\n";        
-        if($slideshow_delay[3]) $OUT .= "restoreTitle : '".$slideshow_delay[3]."',\n";
-        if($slideshow_delay[4]) $OUT .= "fullExpandTitle : '".$slideshow_delay[4]."',\n";
-        if($slideshow_delay[5]) $OUT .= "previousText : '".$slideshow_delay[5]."',\n";
-        if($slideshow_delay[6]) $OUT .= "nextText : '".$slideshow_delay[6]."',\n";
-        if($slideshow_delay[7]) $OUT .= "closeText : '".$slideshow_delay[7]."',\n";
-        if($slideshow_delay[8]) $OUT .= "moveText : '".$slideshow_delay[8]."',\n";
-        if($slideshow_delay[8]) $OUT .= "moveTitle : '".$slideshow_delay[8]."',\n";
-        if($slideshow_delay[9]) $OUT .= "closeTitle : '".$slideshow_delay[9]."',\n";
-        if($slideshow_delay[10]) $OUT .= "resizeTitle : '".$slideshow_delay[10]."',\n";
-        if($slideshow_delay[11]) $OUT .= "playText : '".$slideshow_delay[11]."',\n";
-        if($slideshow_delay[12]) $OUT .= "playTitle : '".$slideshow_delay[12]."',\n";
-        if($slideshow_delay[13]) $OUT .= "pauseText : '".$slideshow_delay[13]."',\n";
-        if($slideshow_delay[14]) $OUT .= "pauseTitle : '".$slideshow_delay[14]."',\n";
-        if($slideshow_delay[15]) $OUT .= "previousTitle : '".$slideshow_delay[15]."',\n";
-        if($slideshow_delay[16]) $OUT .= "nextTitle : '".$slideshow_delay[16]."',\n";
+        if($cust_lang[0]) $OUT .= "loadingText : '".$cust_lang[0]."',\n";
+        if($cust_lang[1]) $OUT .= "loadingTitle : '".$cust_lang[1]."',\n";        
+        if($cust_lang[2]) $OUT .= "focusTitle : '".$cust_lang[2]."',\n";        
+        if($cust_lang[3]) $OUT .= "restoreTitle : '".$cust_lang[3]."',\n";
+        if($cust_lang[4]) $OUT .= "fullExpandTitle : '".$cust_lang[4]."',\n";
+        if($cust_lang[5]) $OUT .= "previousText : '".$cust_lang[5]."',\n";
+        if($cust_lang[6]) $OUT .= "nextText : '".$cust_lang[6]."',\n";
+        if($cust_lang[7]) $OUT .= "closeText : '".$cust_lang[7]."',\n";
+        if($cust_lang[8]) $OUT .= "moveText : '".$cust_lang[8]."',\n";
+        if($cust_lang[8]) $OUT .= "moveTitle : '".$cust_lang[8]."',\n";
+        if($cust_lang[9]) $OUT .= "closeTitle : '".$cust_lang[9]."',\n";
+        if($cust_lang[10]) $OUT .= "resizeTitle : '".$cust_lang[10]."',\n";
+        if($cust_lang[11]) $OUT .= "playText : '".$cust_lang[11]."',\n";
+        if($cust_lang[12]) $OUT .= "playTitle : '".$cust_lang[12]."',\n";
+        if($cust_lang[13]) $OUT .= "pauseText : '".$cust_lang[13]."',\n";
+        if($cust_lang[14]) $OUT .= "pauseTitle : '".$cust_lang[14]."',\n";
+        if($cust_lang[15]) $OUT .= "previousTitle : '".$cust_lang[15]."',\n";
+        if($cust_lang[16]) $OUT .= "nextTitle : '".$cust_lang[16]."',\n";
         $OUT .= "}";       
     }    
     $OUT .= "</script>\n";
@@ -277,7 +281,7 @@ function hs4wp_auto_set($content) {
 /**
  * function hs4wp_callback_htm
  * Callback Function of hs4wp_auto_set
- * @version 1.04
+ * @version 1.05
  * @see hs4wp_auto_set
  * @param string preg
  * @author Marco 'solariz' Goetze
@@ -307,7 +311,26 @@ function hs4wp_callback_htm($a) {
     $img = (get_option('hs4wp_ext_icon') == 'on')?'<img src="'.$hs4wp_plugin_uri.'img/ext.png" width="11" height="9" border="0" alt="" style="border:none;">':'';
     if($subject != false) {
       $OUT .= ",headingText:'".htmlentities($subject,ENT_QUOTES,'UTF-8')."'";
-      $OUT .= '} )" href="#">'.$img." ".htmlentities($linkName,ENT_QUOTES,'UTF-8').'</a>';
+      // Check if LinkName == URL specifying an image; If So display the image instead the link name
+      $Print_linkName = "wsdfsdf".htmlentities($linkName,ENT_QUOTES,'UTF-8');          
+      $regex = "((https?|ftp)\:\/\/)?"; // SCHEME
+      $regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass
+      $regex .= "([a-z0-9-.]*)\.([a-z]{2,3})"; // Host or IP
+      $regex .= "(\:[0-9]{2,5})?"; // Port
+      $regex .= "(\/([a-z0-9+\$_-]\.?)+)*\/?"; // Path
+      $regex .= "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query
+      $regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor 
+      if(preg_match("/^".$regex."$/i",$linkName)) {
+        // check for known image types
+          if(preg_match("/\.[jpe?g|gif|png]/i", $linkName)) {
+            $Print_linkName = "<img src=\"".$linkName."\" class=\"highslide-expander-image\" alt=\"".htmlentities($subject,ENT_QUOTES,'UTF-8')."\" title=\"".htmlentities($subject,ENT_QUOTES,'UTF-8')."\">";
+          }
+      } 
+   
+      
+      
+      
+      $OUT .= '} )" href="#">'.$img." ".$Print_linkName.'</a>';
       $str = str_replace($reg[0],"",$str);
     } else {
       $OUT .= '} )" href="#">'.$img.' info</a>';
@@ -433,10 +456,10 @@ function hs4wp_selector($array,$selected=false) {
 function hs4wp_admin_init()
 {
     GLOBAL $hs4wp_plugin_uri;
-    $hs4wpOptionsCSS = $hs4wp_plugin_uri."options.full.css";
+    $hs4wpOptionsCSS = $hs4wp_plugin_uri."options.full.css";    
     if (is_ssl()) $hs4wpOptionsCSS = preg_replace( '/^http:\/\//', 'https://',  $hs4wpOptionsCSS );
     wp_register_style('hs4wpOptionsCSS', $hs4wpOptionsCSS);
-    wp_enqueue_style( 'hs4wpOptionsCSS');
+    wp_enqueue_style( 'hs4wpOptionsCSS');   
 }
 
 function hs4wp_add_media_button()
@@ -458,4 +481,28 @@ function hs4wp_act(){
         }
     }
     return;   
+}
+
+
+
+/**
+ * function hs4wp_prepare_adminheader
+ * Add neccesary Flattr JS to Admin Head - only on HS4WP Page
+ * @version 1.0
+ * @author Marco 'solariz' Goetze
+ * @return bool
+ */
+function hs4wp_prepare_adminheader() {
+    echo "
+<script type=\"text/javascript\">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */
+</script>";
 }

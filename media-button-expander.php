@@ -78,6 +78,7 @@ wp_enqueue_script( 'jquery-color' );
 With a Highslide Expander you can insert special l inks to your content. If a user click this expander link a HTML popup opens presenting the content you specify. This can be useful for explanation links or e.g. to embed videos. A Highslide Expander is fully HTML capable.
 This dialog is just a helper, you also can enter the Highslide code manually in this format:<br /><br />
 <b>[highslide]</b>(Title;Link Name;Width;Height)Your content<b>[/highslide]</b><br /><br />
+Instead of a 'Link Name' you also can specify a absolut URL to a image. If the Script detects a valid image as link name (jpg,jpeg,png,gif) this image will be displayed, a click at this image will expand the content.<br /><br />
 If the Option is enabled in the Plugin settings you can also specify a SWF file as link instead of "Your content" in this case a SWF Object will be inserted in the HTML Expander automatically.<br/><br />  
 <b>Example for a SWF:</b><br /><br />
 <b>[highslide]</b>(This is my Expander;Click to Expand;640;480)/test/test.swf<b>[/highslide]</b><br /><br />
@@ -94,7 +95,7 @@ If the Option is enabled in the Plugin settings you can also specify a SWF file 
     <tr>
         <td><label for="e_Name">Name: </label></td>
         <td><input name="e_Name" type="text" size="32" value="" tabindex="2" /></td>
-        <td><small><i>Link name used on the page</i></small></td>
+        <td><small><i>Link name used on the page or valid image url (with http://)</i></small></td>
     </tr>
     <tr>
         <td><label for="e_Width">Width: </label></td>

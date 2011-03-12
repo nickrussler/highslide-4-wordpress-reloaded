@@ -1,7 +1,7 @@
 /** 
  * Name:    Highslide JS
  * Version: 4.1.9 (2010-07-05)
- * Author:  Torstein HÃ¸nsi
+ * Author:  Torstein Hønsi
  * Support: www.highslide.com/support
  * License: www.highslide.com/#license
  */
