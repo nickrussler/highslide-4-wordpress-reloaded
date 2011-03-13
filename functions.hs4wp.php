@@ -312,7 +312,7 @@ function hs4wp_callback_htm($a) {
     if($subject != false) {
       $OUT .= ",headingText:'".htmlentities($subject,ENT_QUOTES,'UTF-8')."'";
       // Check if LinkName == URL specifying an image; If So display the image instead the link name
-      $Print_linkName = "wsdfsdf".htmlentities($linkName,ENT_QUOTES,'UTF-8');          
+      $Print_linkName = htmlentities($linkName,ENT_QUOTES,'UTF-8');
       $regex = "((https?|ftp)\:\/\/)?"; // SCHEME
       $regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass
       $regex .= "([a-z0-9-.]*)\.([a-z]{2,3})"; // Host or IP

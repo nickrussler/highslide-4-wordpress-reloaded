@@ -3,8 +3,8 @@ Contributors: solariz
 Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom, imagebox
 Requires at least: 3.0
-Tested up to: 3.2
-Stable tag: 1.19
+Tested up to: 3.1
+Stable tag: 1.20
 
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
@@ -69,8 +69,11 @@ from cheap to expensive.   http://solariz.de/donate
 5. choose many styles or set your own in Advanced
 
 == Changelog ==
+= 1.20 =
+* Fix: Sorry for the fast update but I left some nasty testing stuff active, removed.
+
 = 1.19 =
-* New: You can now specify a img url instead a expander text title more details see forum post: http://bit.ly/epstZZ
+* New: You can now specify a img url instead a expander text title more details see forum post bit.ly/epstZZ
 * Fix: in the new integrated HS JS Files, HS center didnt work probably
 * Fix: if using custom language strings I missed to apply a encoding, fixed. Shouldnt break the function anymore on any special chars.
 
