@@ -46,6 +46,8 @@ function hs4wp_prepare_header() {
  */
 function hs4wp_prepare_footer() {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_ver_plugin,$hs4wp_img_count;
+    $isiPad = (bool) strpos($_SERVER['HTTP_USER_AGENT'],'iPad');
+
     // check if min or full versions should be used     
     if(get_option('hs4wp_useFullJS') == 'on') { 
         $hsjs = 'highslide.full.js';
@@ -63,12 +65,17 @@ function hs4wp_prepare_footer() {
         $hs_script_uri   = str_ireplace("http://".$_SERVER['HTTP_HOST'],"",$hs_script_uri);
     }
     $OUT = "<!-- HighSlide4Wordpress Footer JS Includes -->\n";
-    $OUT .= '<a href="http://solariz.de/highslide-wordpress-reloaded" title="Highslide for Wordpress" style="display:none">highslide for wordpress</a>'."\n";
+    if(get_option('hs4wp_disable_ipadfix') != true && $isiPad) {
+        $OUT .= '<div id="closebutton" class="highslide-overlay closebutton_ipad" onclick="return hs.close(this)" title="Close"></div>'."\n";
+    } elseif(get_option('hs4wp_disable_closebutton') != true) {
+        $OUT .= '<div id="closebutton" class="highslide-overlay closebutton" onclick="return hs.close(this)" title="Close"></div>'."\n";
+    }
+    $OUT .= '<a href="http://solariz.de/highslide-wordpress-reloaded" title="Highslide for Wordpress Plugin" style="display:none">Highslide for Wordpress Plugin</a>'."\n";
     $OUT .= '<script type="text/javascript" src="'.$hs_script_uri.'"></script>';
     $OUT .= '<script type="text/javascript">'."\n";
     $OUT .= "hs.graphicsDir = '".$hs_graphics_uri."';\n";
     $OUT .= (get_option('hs4wp_credits')!="on")?"hs.showCredits = true;\n":"hs.showCredits = false;\n";
-    $OUT .= (get_option('hs4wp_fadeinout')=="on")?"hs.fadeInOut = true;\nhs.transitions = ['expand', 'crossfade'];\n":"hs.fadeInOut = false;\n";
+    if(get_option('hs4wp_disable_ipadfix') != true && $isiPad == false)  $OUT .= (get_option('hs4wp_fadeinout')=="on")?"hs.fadeInOut = true;\nhs.transitions = ['expand', 'crossfade'];\n":"hs.fadeInOut = false;\n";
     $OUT .= (get_option('hs4wp_align_center')=="on")?"hs.align = 'center';\n":"";
     $OUT .= "hs.padToMinWidth = true;\n";
 
@@ -118,42 +125,59 @@ function hs4wp_prepare_footer() {
             $OUT .= "hs.outlineType = 'rounded-white';\n";
             break;
     }//end switch
-    switch(get_option('hs4wp_hs_dimming')) {
-        CASE 1:
-            //$OUT .= "hs.dimmingOpacity = 0;\n";
-            break;
-        CASE 2:
-            $OUT .= "hs.dimmingOpacity = 0.1;\n";
-            break;
-        CASE 3:
-            $OUT .= "hs.dimmingOpacity = 0.2;\n";
-            break;
-        CASE 4:
-            $OUT .= "hs.dimmingOpacity = 0.3;\n";
-            break;
-        CASE 5:
-            $OUT .= "hs.dimmingOpacity = 0.4;\n";
-            break;
-        CASE 6:
-            $OUT .= "hs.dimmingOpacity = 0.5;\n";
-            break;
-        CASE 7:
-            $OUT .= "hs.dimmingOpacity = 0.6;\n";
-            break;
-        CASE 8:
-            $OUT .= "hs.dimmingOpacity = 0.7;\n";
-            break;
-        CASE 9:
-            $OUT .= "hs.dimmingOpacity = 0.8;\n";
-            break;
-        CASE 10:
-            $OUT .= "hs.dimmingOpacity = 0.9;\n";
-            break;
-        CASE 11:
-            $OUT .= "hs.dimmingOpacity = 1;\n";
-            break;
-        DEFAULT:
-            break;
+
+    // Closebutton auf Ipad immer einblenden
+    if(get_option('hs4wp_disable_closebutton') != true || (get_option('hs4wp_disable_ipadfix') != true && $isiPad) ) $OUT .= "hs.registerOverlay({\noverlayId: 'closebutton',\nposition: 'top right',\nfade: 0\n});\n";
+
+    // Ipad Fix: No Backgroudn Dimming on Ipad because of huge lag
+    if(get_option('hs4wp_disable_ipadfix') != true && $isiPad) {
+      $OUT .= "<!-- No HS Dimming on Ipad -->";
+      $OUT .= "hs.dimmingGeckoFix = true;\n";
+      $OUT .= "hs.dimmingDuration = 0;\n";
+      $OUT .= "hs.fadeInOut = false;\n";
+      $OUT .= "hs.loadingOpacity = 1;\n";
+      $OUT .= "hs.transitionDuration = 0;\n";
+      $OUT .= "hs.transitions = [\"none\"];\n";
+      $OUT .= "hs.enableKeyListener = false;\n";
+    }
+     else {
+        switch(get_option('hs4wp_hs_dimming')) {
+            CASE 1:
+                //$OUT .= "hs.dimmingOpacity = 0;\n";
+                break;
+            CASE 2:
+                $OUT .= "hs.dimmingOpacity = 0.1;\n";
+                break;
+            CASE 3:
+                $OUT .= "hs.dimmingOpacity = 0.2;\n";
+                break;
+            CASE 4:
+                $OUT .= "hs.dimmingOpacity = 0.3;\n";
+                break;
+            CASE 5:
+                $OUT .= "hs.dimmingOpacity = 0.4;\n";
+                break;
+            CASE 6:
+                $OUT .= "hs.dimmingOpacity = 0.5;\n";
+                break;
+            CASE 7:
+                $OUT .= "hs.dimmingOpacity = 0.6;\n";
+                break;
+            CASE 8:
+                $OUT .= "hs.dimmingOpacity = 0.7;\n";
+                break;
+            CASE 9:
+                $OUT .= "hs.dimmingOpacity = 0.8;\n";
+                break;
+            CASE 10:
+                $OUT .= "hs.dimmingOpacity = 0.9;\n";
+                break;
+            CASE 11:
+                $OUT .= "hs.dimmingOpacity = 1;\n";
+                break;
+            DEFAULT:
+                break;
+        }
     }
     // Advanced Section
       $OUT .= get_option('hs4wp_advanced');
@@ -167,9 +191,16 @@ function hs4wp_prepare_footer() {
       $OUT .= "\tuseControls: true,\n";
       $OUT .= "\tfixedControls: 'fit',\n";
       $OUT .= "\toverlayOptions: {\n";
-      $OUT .= "\t\topacity: .6,\n";
       $OUT .= "\t\tposition: 'bottom center',\n";
-      $OUT .= "\t\thideOnMouseOut: true\n";
+      if(get_option('hs4wp_disable_ipadfix') != true && $isiPad) {
+          $OUT .= "\t\topacity: 1,\n";
+          $OUT .= "\t\thideOnMouseOut: false\n";
+      } else {
+          $OUT .= "\t\topacity: .6,\n";
+          $OUT .= "\t\thideOnMouseOut: true\n";
+      }
+
+
       $OUT .= "\t}\n";
       $OUT .= "});\n";
     }
@@ -206,6 +237,7 @@ function hs4wp_prepare_footer() {
         $OUT .= "}";       
     }    
     $OUT .= "</script>\n";
+
     echo $OUT;
 }//EoFu: hs4wp_prepare_footer
 
@@ -219,7 +251,9 @@ function hs4wp_prepare_footer() {
  */
 function hs4wp_add_to_footer() {
     GLOBAL $hs4wp_insert_into_footer;
+    $OUT = "";
     if(isset($hs4wp_insert_into_footer) == false OR $hs4wp_insert_into_footer == "") {
+        echo $OUT;
         return false;
     } else {
         $OUT = "<!-- HighSlide4Wordpress Footer HTML Expander DIVs -->\n";
@@ -506,3 +540,12 @@ function hs4wp_prepare_adminheader() {
 /* ]]> */
 </script>";
 }
+
+
+// Add settings link on plugin page
+function hs4wp_plugin_settings_link($links) {
+  $settings_link = '<a href="options-general.php?page=highslide-4-wordpress-reloaded/functions.hs4wp.php">Settings</a>';
+  array_unshift($links, $settings_link);
+  return $links;
+}
+

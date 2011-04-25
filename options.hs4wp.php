@@ -27,7 +27,9 @@ function hs4wp_options_page()
             $media_icon         =(!isset($_POST['media_icon'])? '': $_POST['media_icon']);
             $useFullJS          =(!isset($_POST['useFullJS'])? '': $_POST['useFullJS']);
             $handle_swf         =(!isset($_POST['handle_swf'])? '': $_POST['handle_swf']);         
-            $disable_slideshow  =(!isset($_POST['disable_slideshow'])? '': $_POST['disable_slideshow']);         
+            $disable_slideshow  =(!isset($_POST['disable_slideshow'])? '': $_POST['disable_slideshow']);
+            $disable_ipadfix    =(!isset($_POST['disable_ipadfix'])? '': $_POST['disable_ipadfix']);
+            $disable_closebutton=(!isset($_POST['disable_closebutton'])? '': $_POST['disable_closebutton']);
             $use_lang           =(!isset($_POST['use_lang'])? '': $_POST['use_lang']);
             $input1             =(!isset($_POST['input1'])? 5: intval($_POST['input1']));
             $input2             =(!isset($_POST['input2'])? '': $_POST['input2']);
@@ -70,7 +72,9 @@ function hs4wp_options_page()
             update_option('hs4wp_ptag_workaround', $ptag_workaround);
             update_option('hs4wp_media_icon', $media_icon);          
             update_option('hs4wp_handle_swf', $handle_swf);
-            update_option('hs4wp_disable_slideshow', $disable_slideshow);            
+            update_option('hs4wp_disable_slideshow', $disable_slideshow);
+            update_option('hs4wp_disable_ipadfix', $disable_ipadfix);
+            update_option('hs4wp_disable_closebutton', $disable_closebutton);
             update_option('hs4wp_useFullJS', $useFullJS);    
             update_option('hs4wp_use_lang', $use_lang);    
             
@@ -127,6 +131,8 @@ function hs4wp_options_page()
         $media_icon         =( get_option('hs4wp_media_icon')=='on' ) ? "checked":"";
         $handle_swf         =( get_option('hs4wp_handle_swf')=='on' ) ? "checked":"";
         $disable_slideshow  =( get_option('hs4wp_disable_slideshow')=='on' ) ? "checked":"";
+        $disable_ipadfix    =( get_option('hs4wp_disable_ipadfix')=='on' ) ? "checked":"";
+        $disable_closebutton=( get_option('hs4wp_disable_closebutton')=='on' ) ? "checked":"";
         $useFullJS          =( get_option('hs4wp_useFullJS')=='on' ) ? "checked":"";
         $use_lang           =( get_option('hs4wp_use_lang')=='on' ) ? "checked":"";
         
@@ -231,7 +237,7 @@ function hs4wp_options_page()
                             <h3><b>PLEASE READ CAREFUL:</b></h3>
                             <ul>
                               <div>
-                              Like the most plugin writers I spent my spare time to write those plugins, I do not demand on money but if you like this plugin fo please be fair and do me a little favour by a small donation (<a href="http://solariz.de/donate" target="_blank">how ? Information</a>). Thanks for any support, it helps to keep this plugin up to date and allows further development.
+                              Like the most plugin writers I spent my spare time to write those plugins, I do not demand on money but if you like this plugin please be fair and do me a little favour and send a small donation (<a href="http://solariz.de/donate" target="_blank">how ? Information</a>). Thanks for any support, it helps to keep this plugin up to date and allows further development.
                               <p><h4>Any Commercial use, it`s Donationware:</h4>
                               Because nobody seems to care nowadays, again in short clear words: If you use this Plugin on a webpage with ANY kind of commercial background you need to Donate to use this plugin. No donation, no license, no usage allowed ! Thanks.
                               </p>
@@ -271,7 +277,15 @@ function hs4wp_options_page()
                             <div>
                                 <input id="check8" type="checkbox" name="disable_slideshow" $disable_slideshow />
                                 <label for="check8">Disable Slideshow functionality.</label>
-                            </div>        
+                            </div>
+                            <div>
+                                <input id="check9" type="checkbox" name="disable_ipadfix" $disable_ipadfix />
+                                <label for="check9">Disable iPad Auto-Fix.</label>
+                            </div>
+                            <div>
+                                <input id="check10" type="checkbox" name="disable_closebutton" $disable_closebutton />
+                                <label for="check10">Disable close button on expanded images.</label>
+                            </div>
                             <br/>
                             <!-- left aligned input -->
                             <table>
@@ -378,3 +392,5 @@ function hs4wp_options_page()
         </div>
 END;
 }
+
+
