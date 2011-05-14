@@ -1,23 +1,21 @@
 <?php
 
-
 // Options Page
 function hs4wp_options_page()
 {
-    GLOBAL $hs4wp_plugin_uri,$hs4wp_plugin_path;
+    GLOBAL $hs4wp_plugin_uri,$hs4wp_plugin_path,$wpdb;
     
     $mypage = add_management_page( 'myplugin', 'myplugin', 9, __FILE__, 'myplugin_admin_page' );
     add_action( "admin_print_scripts-$mypage", 'hs4wp_prepare_adminheader' );
 
-    
-
+ 
     // If form was submitted
 	if (isset($_POST['submitted']))
 	{
 	        // Save Settings
             $lic_agreement      =(!isset($_POST['lic_agreement'])? '': $_POST['lic_agreement']);
-			$coralize           =(!isset($_POST['coralize'])? '': $_POST['coralize']);
-   			$credits            =(!isset($_POST['credits'])? '': $_POST['credits']);
+            $coralize           =(!isset($_POST['coralize'])? '': $_POST['coralize']);
+            $credits            =(!isset($_POST['credits'])? '': $_POST['credits']);
             $fadeinout          =(!isset($_POST['fadeinout'])? '': $_POST['fadeinout']);
             $attachment_filter  =(!isset($_POST['attachment_filter'])? '': $_POST['attachment_filter']);
             $only_use_header    =(!isset($_POST['only_use_header'])? '': $_POST['only_use_header']);
@@ -59,34 +57,8 @@ function hs4wp_options_page()
             $inputL15           =(!isset($_POST['inputL15'])? false: stripslashes($_POST['inputL15']));
             $inputL16           =(!isset($_POST['inputL16'])? false: stripslashes($_POST['inputL16']));
 
-            
-            // Check boxes
-            update_option('hs4wp_lic_agreement', $lic_agreement);
-            update_option('hs4wp_coralize', $coralize);
-            update_option('hs4wp_credits', $credits);
-            update_option('hs4wp_fadeinout', $fadeinout);
-            update_option('hs4wp_attachment_filter', $attachment_filter);
-            update_option('hs4wp_only_use_header', $only_use_header);
-            update_option('hs4wp_align_center', $align_center);
-            update_option('hs4wp_ext_icon', $ext_icon);
-            update_option('hs4wp_ptag_workaround', $ptag_workaround);
-            update_option('hs4wp_media_icon', $media_icon);          
-            update_option('hs4wp_handle_swf', $handle_swf);
-            update_option('hs4wp_disable_slideshow', $disable_slideshow);
-            update_option('hs4wp_disable_ipadfix', $disable_ipadfix);
-            update_option('hs4wp_disable_closebutton', $disable_closebutton);
-            update_option('hs4wp_useFullJS', $useFullJS);    
-            update_option('hs4wp_use_lang', $use_lang);    
-            
-            // Input
-            update_option('hs4wp_slideshow_delay', $input1);
-            update_option('hs4wp_custom_css', $input2);
-            update_option('hs4wp_custom_zindex', $zinput);
-            
-            
-            
-            // Language 
-            update_option('hs4wp_langtext', array(
+            // Encoding of the Language Array
+            $LANGARRAY = array(
                 0=>$inputL0,
                 1=>$inputL1,
                 2=>$inputL2,
@@ -104,44 +76,103 @@ function hs4wp_options_page()
                 14=>$inputL14,
                 15=>$inputL15,
                 16=>$inputL16                
-            ));
+            );
+            $TEMP = array();
+            $CUST_ENC = array('À'=>'&Agrave;', 'à'=>'&agrave;', 'Á'=>'&Aacute;', 'á'=>'&aacute;', 'Â'=>'&Acirc;', 'â'=>'&acirc;', 'Ã'=>'&Atilde;', 'ã'=>'&atilde;', 'Ä'=>'&Auml;', 'ä'=>'&auml;', 'Å'=>'&Aring;', 'å'=>'&aring;', 'Æ'=>'&AElig;', 'æ'=>'&aelig;', 'Ç'=>'&Ccedil;', 'ç'=>'&ccedil;', 'Ð'=>'&ETH;', 'ð'=>'&eth;', 'È'=>'&Egrave;', 'è'=>'&egrave;', 'É'=>'&Eacute;', 'é'=>'&eacute;', 'Ê'=>'&Ecirc;', 'ê'=>'&ecirc;', 'Ë'=>'&Euml;', 'ë'=>'&euml;', 'Ì'=>'&Igrave;', 'ì'=>'&igrave;', 'Í'=>'&Iacute;', 'í'=>'&iacute;', 'Î'=>'&Icirc;', 'î'=>'&icirc;', 'Ï'=>'&Iuml;', 'ï'=>'&iuml;', 'Ñ'=>'&Ntilde;', 'ñ'=>'&ntilde;', 'Ò'=>'&Ograve;', 'ò'=>'&ograve;', 'Ó'=>'&Oacute;', 'ó'=>'&oacute;', 'Ô'=>'&Ocirc;', 'ô'=>'&ocirc;', 'Õ'=>'&Otilde;', 'õ'=>'&otilde;', 'Ö'=>'&Ouml;', 'ö'=>'&ouml;', 'Ø'=>'&Oslash;', 'ø'=>'&oslash;', 'Œ'=>'&OElig;', 'œ'=>'&oelig;', 'ß'=>'&szlig;', 'Þ'=>'&THORN;', 'þ'=>'&thorn;', 'Ù'=>'&Ugrave;', 'ù'=>'&ugrave;', 'Ú'=>'&Uacute;', 'ú'=>'&uacute;', 'Û'=>'&Ucirc;', 'û'=>'&ucirc;', 'Ü'=>'&Uuml;', 'ü'=>'&uuml;', 'Ý'=>'&Yacute;', 'ý'=>'&yacute;', 'Ÿ'=>'&Yuml;', 'ÿ'=>'&yuml;');       
+            foreach ($LANGARRAY as $key => $value) {
+                $value = htmlentities($value, ENT_QUOTES | ENT_IGNORE,'UTF-8'); 
+                foreach ($CUST_ENC as $s => $r) {
+                    $value = str_replace($s, $r, $value);
+                }
+                $TEMP[$key] = $value;          
+            }
+            $LANGARRAY = $TEMP;
+            unset($TEMP,$key,$value,$s,$r,$CUST_ENC);
+            
+            $HS4WPOPTIONS = array(
+                'hs4wp_lic_agreement' => $lic_agreement,
+                'hs4wp_coralize' => $coralize,
+                'hs4wp_credits' => $credits,
+                'hs4wp_fadeinout' => $fadeinout,
+                'hs4wp_attachment_filter' => $attachment_filter,
+                'hs4wp_only_use_header' => $only_use_header,
+                'hs4wp_align_center' => $align_center,
+                'hs4wp_ext_icon' => $ext_icon,
+                'hs4wp_ptag_workaround' => $ptag_workaround,
+                'hs4wp_media_icon' => $media_icon,
+                'hs4wp_handle_swf' => $handle_swf,
+                'hs4wp_disable_slideshow' => $disable_slideshow,
+                'hs4wp_disable_ipadfix' => $disable_ipadfix,
+                'hs4wp_disable_closebutton' => $disable_closebutton,
+                'hs4wp_useFullJS' => $useFullJS,
+                'hs4wp_use_lang' => $use_lang,
+                'hs4wp_slideshow_delay' => $input1,
+                'hs4wp_custom_css' => $input2,
+                'hs4wp_custom_zindex' => $zinput,
+                'hs4wp_langtext' => $LANGARRAY,
+                'hs4wp_hs_appearance' => $select1,
+                'hs4wp_hs_dimming' => $select2,
+                'hs4wp_hs_caption' => $select3,
+                'hs4wp_hs_heading' => $select4,
+                'hs4wp_advanced' => $textarea1 
+                );
+            
+            // Update Options
+            foreach ($HS4WPOPTIONS as $key => $value) {
+                update_option($key, $value);
+            }// End foreach
+            
+            
+            // WPMU Save Global Options
+            $MultiSiteMsg = '';
+            if(function_exists('is_multisite')) // WP MULTISITE PART
+            {
+                if( is_multisite() && current_user_can('manage_network') )
+                {
+                   if($_POST['wpmuhs4wp'] != false)
+                   {                        
+                        foreach ($HS4WPOPTIONS as $key => $value) {
+                            update_site_option($key, $value);
+                        }// End foreach
+                        $MultiSiteMsg = " Multisite Default values set.";
+                   } 
+                }
+            }
+            
+          
+            // Show message
+            $msg_status = 'Options saved.'.$MultiSiteMsg;
+            _e('<div id="message" class="updated fade"><p>' . $msg_status . '</p></div>');
+	}// End If is submitted
 
-            // Selects
-            update_option('hs4wp_hs_appearance', $select1);
-            update_option('hs4wp_hs_dimming', $select2);
-            update_option('hs4wp_hs_caption', $select3);
-            update_option('hs4wp_hs_heading', $select4);
-            update_option('hs4wp_advanced', $textarea1);
-
-			$msg_status = 'Options saved.';
-		    // Show message
-		   _e('<div id="message" class="updated fade"><p>' . $msg_status . '</p></div>');
-	}
-    // Get current setup from DB
-//        $coralize = get_option('hs4wp_coralize');
-        $lic_agreement      =( get_option('hs4wp_lic_agreement')=='on' ) ? "checked":"";
-        $coralize           =( get_option('hs4wp_coralize')=='on' ) ? "checked":"";
-        $credits            =( get_option('hs4wp_credits')=='on' ) ? "checked":"";
-        $fadeinout          =( get_option('hs4wp_fadeinout')=='on' ) ? "checked":"";
-        $attachment_filter  =( get_option('hs4wp_attachment_filter')=='on' ) ? "checked":"";
-        $only_use_header    =( get_option('hs4wp_only_use_header')=='on' ) ? "checked":"";
-        $align_center       =( get_option('hs4wp_align_center')=='on' ) ? "checked":"";
-        $ext_icon           =( get_option('hs4wp_ext_icon')=='on' ) ? "checked":"";
-        $ptag_workaround    =( get_option('hs4wp_ptag_workaround')=='on' ) ? "checked":"";
-        $media_icon         =( get_option('hs4wp_media_icon')=='on' ) ? "checked":"";
-        $handle_swf         =( get_option('hs4wp_handle_swf')=='on' ) ? "checked":"";
-        $disable_slideshow  =( get_option('hs4wp_disable_slideshow')=='on' ) ? "checked":"";
-        $disable_ipadfix    =( get_option('hs4wp_disable_ipadfix')=='on' ) ? "checked":"";
-        $disable_closebutton=( get_option('hs4wp_disable_closebutton')=='on' ) ? "checked":"";
-        $useFullJS          =( get_option('hs4wp_useFullJS')=='on' ) ? "checked":"";
-        $use_lang           =( get_option('hs4wp_use_lang')=='on' ) ? "checked":"";
         
-        $slideshow_delay    =  get_option('hs4wp_slideshow_delay');
-        $custom_css         =  get_option('hs4wp_custom_css');
-        $textarea1          =  get_option('hs4wp_advanced');
-        $hszIndex           =  get_option('hs4wp_custom_zindex');
+        
+//******* Get current setup from DB
+
+      
+        $lic_agreement      =( hs4wp_getConf('hs4wp_lic_agreement')=='on' ) ? "checked":"";
+        $coralize           =( hs4wp_getConf('hs4wp_coralize')=='on' ) ? "checked":"";
+        $credits            =( hs4wp_getConf('hs4wp_credits')=='on' ) ? "checked":"";
+        $fadeinout          =( hs4wp_getConf('hs4wp_fadeinout')=='on' ) ? "checked":"";
+        $attachment_filter  =( hs4wp_getConf('hs4wp_attachment_filter')=='on' ) ? "checked":"";
+        $only_use_header    =( hs4wp_getConf('hs4wp_only_use_header')=='on' ) ? "checked":"";
+        $align_center       =( hs4wp_getConf('hs4wp_align_center')=='on' ) ? "checked":"";
+        $ext_icon           =( hs4wp_getConf('hs4wp_ext_icon')=='on' ) ? "checked":"";
+        $ptag_workaround    =( hs4wp_getConf('hs4wp_ptag_workaround')=='on' ) ? "checked":"";
+        $media_icon         =( hs4wp_getConf('hs4wp_media_icon')=='on' ) ? "checked":"";
+        $handle_swf         =( hs4wp_getConf('hs4wp_handle_swf')=='on' ) ? "checked":"";
+        $disable_slideshow  =( hs4wp_getConf('hs4wp_disable_slideshow')=='on' ) ? "checked":"";
+        $disable_ipadfix    =( hs4wp_getConf('hs4wp_disable_ipadfix')=='on' ) ? "checked":"";
+        $disable_closebutton=( hs4wp_getConf('hs4wp_disable_closebutton')=='on' ) ? "checked":"";
+        $useFullJS          =( hs4wp_getConf('hs4wp_useFullJS')=='on' ) ? "checked":"";
+        $use_lang           =( hs4wp_getConf('hs4wp_use_lang')=='on' ) ? "checked":"";
+        
+        $slideshow_delay    =  hs4wp_getConf('hs4wp_slideshow_delay');
+        $custom_css         =  hs4wp_getConf('hs4wp_custom_css');
+        $textarea1          =  hs4wp_getConf('hs4wp_advanced');
+        $hszIndex           =  hs4wp_getConf('hs4wp_custom_zindex');
               
-        $hs4wp_langtext    = get_option('hs4wp_langtext');
+        $hs4wp_langtext    = hs4wp_getConf('hs4wp_langtext');
         
         
     // Defaults
@@ -162,7 +193,7 @@ function hs4wp_options_page()
         6=>"Dark and Glossy",
         7=>"Dark borderless, floating-caption",
         99=>"Use own definition in Advanced Section"
-        ),get_option('hs4wp_hs_appearance'));
+        ),hs4wp_getConf('hs4wp_hs_appearance'));
 
         $hs4wp_select2 = hs4wp_selector(array(
         1=>"0% , No Dimming",
@@ -176,21 +207,21 @@ function hs4wp_options_page()
         9=>"80%",
         10=>"90%",
         11=>"100%, full black"
-        ),get_option('hs4wp_hs_dimming'));
+        ),hs4wp_getConf('hs4wp_hs_dimming'));
 
         $hs4wp_select3 = hs4wp_selector(array(
         0=>"none",
         1=>"Image Title",
         2=>"Image Alt",
         3=>"Link Title"
-        ),get_option('hs4wp_hs_caption'));
+        ),hs4wp_getConf('hs4wp_hs_caption'));
 
         $hs4wp_select4 = hs4wp_selector(array(
         0=>"none",
         1=>"Image Title",
         2=>"Image Alt",
         3=>"Link Title"
-        ),get_option('hs4wp_hs_heading'));
+        ),hs4wp_getConf('hs4wp_hs_heading'));
 
         echo <<<END
         <div id="hs4wOptions">
@@ -206,7 +237,8 @@ function hs4wp_options_page()
                     <img src="$imgpath/help.png"><a href="http://solariz.de/highslide-wordpress-reloaded" target="_blank" style="text-decoration:none;"> Plugin Manual</a><br /><br />
                     <img src="$imgpath/donate.png"><a href="http://solariz.de/donate" target="_blank" style="text-decoration:none;"> How to Donate?</a> <br /><br />
                     <img src="$imgpath/star.png"><a href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/" target="_blank" style="text-decoration:none;"> Rate this plugin</a><br /><br />
-                    <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/"></a>
+                    <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/"></a><br /><br />
+                    <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://bit.ly/hs4wp" data-text="Checkout this #Wordpress #Plugin - Highslide4Wordpress - Easy Image Expander!" data-count="none" data-via="solariz">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script><br />
                   </ul>
         		<h3>The Author</h3>
                     <div class="infoBox">
@@ -384,13 +416,35 @@ function hs4wp_options_page()
                             If you have no clue what HS Parameters are just leave this textbox empty.
                             </ul>
                             <div class="submit"><input type="submit" name="Submit" value="Save options" /></div>
-            			</form>
-            		</div>
-                </div>
-        	</div>
-        </div>
-        </div>
 END;
+        
+    if(function_exists('is_multisite')) // WP MULTISITE PART
+    {
+        if( is_multisite() && current_user_can('manage_network') )
+        {
+echo <<<END
+    <h3>Multisite Options<span>[<a href="http://solariz.de/highslide-wordpress-reloaded#multisite" target="hs4wpHelp">help</a>]</span></h3>
+    <ul>
+    <div>
+        Some HS4WP Users asked me to integrate a full Wordpress Multipage support. Well, this section is kind of. I`m never worked with WPMU for myself so its hard to get a full understanding of the different API functions. Also not every function is as well documented as it should. So please see this part currently just as a experimental enhanced workaround. <br />
+        <h4>How does it work ?</h4>
+        Well you only see this Section if you are in a level of a Networkadmin, normal site admins just see the default HS4WP settings without this part. 
+       <br/><br/>
+        <div>
+            <input id="input_wpmuhs4wp" type="checkbox" name="wpmuhs4wp" />
+            <label for="input_wpmuhs4wp">Set current settings as Default Networkwide preconfiguration</label>
+        </div>
+    </div>
+    <div class="submit"><input type="submit" name="Submit" value="Save options" /></div>
+    </ul>
+END;
+        }
+    }// END OF MULTISITE PART
+      
+        
+                           
+            			
+echo "</form></div></div></div></div></div>";
+    
 }
-
-
+// EOF

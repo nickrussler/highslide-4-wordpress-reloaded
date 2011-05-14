@@ -9,11 +9,11 @@
  */
 function hs4wp_prepare_header() {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_ver_plugin;
-    $custom_css = get_option('hs4wp_custom_css');
+    $custom_css = hs4wp_getConf('hs4wp_custom_css');
     
     // check if min or full versions should be used
     $CSSJS = array();
-    if(get_option('hs4wp_useFullJS') == 'on') {    
+    if(hs4wp_getConf('hs4wp_useFullJS') == 'on') {    
         // FULL
         $CSSJS['hs']        = 'highslide.full.css';
         $CSSJS['hsmsie']    = 'highslide-ie6.full.css';
@@ -26,7 +26,7 @@ function hs4wp_prepare_header() {
     }
     
     $hs_css_uri = (strlen($custom_css)>=5)?$custom_css."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin:$hs4wp_plugin_uri.$CSSJS['hs']."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
-    $coralize= get_option('hs4wp_coralize');
+    $coralize= hs4wp_getConf('hs4wp_coralize');
     if($coralize != "" && $coralize != false) {
         $hs_css_uri = hs4wp_coralize_uri($hs_css_uri);
     }
@@ -34,6 +34,7 @@ function hs4wp_prepare_header() {
     $OUT .= "<!--[if lt IE 7]>\n";
     $OUT .= '<link rel="stylesheet" type="text/css" href="'.$hs4wp_plugin_uri.$CSSJS['hsmsie'].'" />'."\n";
     $OUT .= "<![endif]-->\n";
+
     echo $OUT;
 }//EoFu: hs4wp_prepare_header
 
@@ -49,12 +50,12 @@ function hs4wp_prepare_footer() {
     $isiPad = (bool) strpos($_SERVER['HTTP_USER_AGENT'],'iPad');
 
     // check if min or full versions should be used     
-    if(get_option('hs4wp_useFullJS') == 'on') { 
+    if(hs4wp_getConf('hs4wp_useFullJS') == 'on') { 
         $hsjs = 'highslide.full.js';
     } else {
         $hsjs = 'highslide.min.js';
     }  
-    $coralize= get_option('hs4wp_coralize');
+    $coralize= hs4wp_getConf('hs4wp_coralize');
     $hs_script_uri = $hs4wp_plugin_uri.$hsjs."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
     $hs_graphics_uri = $hs4wp_plugin_uri."graphics/";
     if($coralize != "" && $coralize != false) {
@@ -65,22 +66,22 @@ function hs4wp_prepare_footer() {
         $hs_script_uri   = str_ireplace("http://".$_SERVER['HTTP_HOST'],"",$hs_script_uri);
     }
     $OUT = "<!-- HighSlide4Wordpress Footer JS Includes -->\n";
-    if(get_option('hs4wp_disable_ipadfix') != true && $isiPad) {
+    if(hs4wp_getConf('hs4wp_disable_ipadfix') != true && $isiPad) {
         $OUT .= '<div id="closebutton" class="highslide-overlay closebutton_ipad" onclick="return hs.close(this)" title="Close"></div>'."\n";
-    } elseif(get_option('hs4wp_disable_closebutton') != true) {
+    } elseif(hs4wp_getConf('hs4wp_disable_closebutton') != true && hs4wp_getConf('hs4wp_hs_heading') == false) {
         $OUT .= '<div id="closebutton" class="highslide-overlay closebutton" onclick="return hs.close(this)" title="Close"></div>'."\n";
     }
     $OUT .= '<a href="http://solariz.de/highslide-wordpress-reloaded" title="Highslide for Wordpress Plugin" style="display:none">Highslide for Wordpress Plugin</a>'."\n";
     $OUT .= '<script type="text/javascript" src="'.$hs_script_uri.'"></script>';
     $OUT .= '<script type="text/javascript">'."\n";
     $OUT .= "hs.graphicsDir = '".$hs_graphics_uri."';\n";
-    $OUT .= (get_option('hs4wp_credits')!="on")?"hs.showCredits = true;\n":"hs.showCredits = false;\n";
-    if(get_option('hs4wp_disable_ipadfix') != true && $isiPad == false)  $OUT .= (get_option('hs4wp_fadeinout')=="on")?"hs.fadeInOut = true;\nhs.transitions = ['expand', 'crossfade'];\n":"hs.fadeInOut = false;\n";
-    $OUT .= (get_option('hs4wp_align_center')=="on")?"hs.align = 'center';\n":"";
+    $OUT .= (hs4wp_getConf('hs4wp_credits')!="on")?"hs.showCredits = true;\n":"hs.showCredits = false;\n";
+    if(hs4wp_getConf('hs4wp_disable_ipadfix') != true && $isiPad == false)  $OUT .= (hs4wp_getConf('hs4wp_fadeinout')=="on")?"hs.fadeInOut = true;\nhs.transitions = ['expand', 'crossfade'];\n":"hs.fadeInOut = false;\n";
+    $OUT .= (hs4wp_getConf('hs4wp_align_center')=="on")?"hs.align = 'center';\n":"";
     $OUT .= "hs.padToMinWidth = true;\n";
 
     // Caption Mode
-    switch(get_option('hs4wp_hs_caption')) {
+    switch(hs4wp_getConf('hs4wp_hs_caption')) {
         CASE 1:
             $OUT .= "hs.captionEval = 'this.thumb.title';\n";
             break;
@@ -93,8 +94,24 @@ function hs4wp_prepare_footer() {
         DEFAULT:
             break;
     }//end switch
+    // Caption as Title
+    switch(hs4wp_getConf('hs4wp_hs_heading')) {
+        CASE 1:
+            $OUT .= "hs.headingEval = 'this.thumb.title';\n";
+            break;
+        CASE 2:
+            $OUT .= "hs.headingEval = 'this.thumb.alt';\n";
+            break;
+        CASE 3:
+            $OUT .= "hs.headingEval = 'this.a.title';\n";
+            break;
+        DEFAULT:
+            break;        
+    }
+    
+    
     // Style Definitions
-    switch(get_option('hs4wp_hs_appearance')) {
+    switch(hs4wp_getConf('hs4wp_hs_appearance')) {
         CASE 1:
             $OUT .= "hs.outlineType = 'rounded-white';\n";
             #$OUT .= "hs.wrapperClassName = 'draggable-header';\n";
@@ -127,10 +144,10 @@ function hs4wp_prepare_footer() {
     }//end switch
 
     // Closebutton auf Ipad immer einblenden
-    if(get_option('hs4wp_disable_closebutton') != true || (get_option('hs4wp_disable_ipadfix') != true && $isiPad) ) $OUT .= "hs.registerOverlay({\noverlayId: 'closebutton',\nposition: 'top right',\nfade: 0\n});\n";
+    if(hs4wp_getConf('hs4wp_disable_closebutton') != true || (hs4wp_getConf('hs4wp_disable_ipadfix') != true && $isiPad) ) $OUT .= "hs.registerOverlay({\noverlayId: 'closebutton',\nposition: 'top right',\nfade: 0\n});\n";
 
     // Ipad Fix: No Backgroudn Dimming on Ipad because of huge lag
-    if(get_option('hs4wp_disable_ipadfix') != true && $isiPad) {
+    if(hs4wp_getConf('hs4wp_disable_ipadfix') != true && $isiPad) {
       $OUT .= "<!-- No HS Dimming on Ipad -->";
       $OUT .= "hs.dimmingGeckoFix = true;\n";
       $OUT .= "hs.dimmingDuration = 0;\n";
@@ -141,7 +158,7 @@ function hs4wp_prepare_footer() {
       $OUT .= "hs.enableKeyListener = false;\n";
     }
      else {
-        switch(get_option('hs4wp_hs_dimming')) {
+        switch(hs4wp_getConf('hs4wp_hs_dimming')) {
             CASE 1:
                 //$OUT .= "hs.dimmingOpacity = 0;\n";
                 break;
@@ -180,11 +197,11 @@ function hs4wp_prepare_footer() {
         }
     }
     // Advanced Section
-      $OUT .= get_option('hs4wp_advanced');
+      $OUT .= hs4wp_getConf('hs4wp_advanced');
 	// Add the controlbar
-    if($hs4wp_img_count > 1 && get_option('hs4wp_disable_slideshow') == false) {
+    if($hs4wp_img_count > 1 && hs4wp_getConf('hs4wp_disable_slideshow') == false) {
       $OUT .= "if (hs.addSlideshow) hs.addSlideshow({\n";
-      $interval = intval(get_option('hs4wp_slideshow_delay')*1000);
+      $interval = intval(hs4wp_getConf('hs4wp_slideshow_delay')*1000);
       if($interval < 1000) $interval = 5000;
       $OUT .= "\tinterval: ".$interval.",\n";
       $OUT .= "\trepeat: false,\n";
@@ -192,7 +209,7 @@ function hs4wp_prepare_footer() {
       $OUT .= "\tfixedControls: 'fit',\n";
       $OUT .= "\toverlayOptions: {\n";
       $OUT .= "\t\tposition: 'bottom center',\n";
-      if(get_option('hs4wp_disable_ipadfix') != true && $isiPad) {
+      if(hs4wp_getConf('hs4wp_disable_ipadfix') != true && $isiPad) {
           $OUT .= "\t\topacity: 1,\n";
           $OUT .= "\t\thideOnMouseOut: false\n";
       } else {
@@ -204,17 +221,13 @@ function hs4wp_prepare_footer() {
       $OUT .= "\t}\n";
       $OUT .= "});\n";
     }
-    $hszIndex = get_option('hs4wp_custom_zindex');
+    $hszIndex = hs4wp_getConf('hs4wp_custom_zindex');
     if( $hszIndex != false ) {
         $OUT .= "hs.zIndexCounter = ".$hszIndex.";\n";
     }
     // Custom language / translation option
-    if( get_option('hs4wp_use_lang')=='on' ) {
-        $cust_lang    = get_option('hs4wp_langtext');        
-        // Encoding
-        foreach ($cust_lang as $key => $value) {
-            $cust_lang[$key] = htmlentities($value,ENT_QUOTES,'UTF-8');
-        }
+    if( hs4wp_getConf('hs4wp_use_lang')=='on' ) {
+        $cust_lang    = hs4wp_getConf('hs4wp_langtext'); 
         $OUT .= "hs.lang = {";
         if($cust_lang[0]) $OUT .= "loadingText : '".$cust_lang[0]."',\n";
         if($cust_lang[1]) $OUT .= "loadingTitle : '".$cust_lang[1]."',\n";        
@@ -274,8 +287,14 @@ function hs4wp_add_to_footer() {
  */
 function hs4wp_config_page() {
     GLOBAL $hs4wp_plugin_path;
-    require_once($hs4wp_plugin_path.'options.hs4wp.php');
-    return add_options_page('highslide 4 Wordpress *reloaded* Settings', 'Highslide 4 Wordpress', 8, __FILE__, 'hs4wp_options_page');
+    if (current_user_can('manage_options')) 
+    {
+        if (function_exists('add_options_page')) 
+        {
+            require_once($hs4wp_plugin_path.'options.hs4wp.php');
+            add_options_page('highslide 4 Wordpress *reloaded* Settings', 'Highslide 4 Wordpress', 8, __FILE__, 'hs4wp_options_page');
+        }
+    }   
 }
 
 /**
@@ -340,9 +359,9 @@ function hs4wp_callback_htm($a) {
         $style = ' align="left" style="width:'.$width.'px;height:'.$height.'px;"';
     else
         $style = ' align="left"';
-    $OUT = (get_option('hs4wp_ptag_workaround') == 'on')?'</p>':'';
+    $OUT = (hs4wp_getConf('hs4wp_ptag_workaround') == 'on')?'</p>':'';
     $OUT .= '<a class="highslide" onclick="return hs.htmlExpand(this, {wrapperClassName: \'draggable-header\',contentId: \'highslide-html_'.$contentID.'\'';
-    $img = (get_option('hs4wp_ext_icon') == 'on')?'<img src="'.$hs4wp_plugin_uri.'img/ext.png" width="11" height="9" border="0" alt="" style="border:none;">':'';
+    $img = (hs4wp_getConf('hs4wp_ext_icon') == 'on')?'<img src="'.$hs4wp_plugin_uri.'img/ext.png" width="11" height="9" border="0" alt="" style="border:none;">':'';
     if($subject != false) {
       $OUT .= ",headingText:'".htmlentities($subject,ENT_QUOTES,'UTF-8')."'";
       // Check if LinkName == URL specifying an image; If So display the image instead the link name
@@ -382,7 +401,7 @@ function hs4wp_callback_htm($a) {
              </div>';
 
     // Flash handler
-    if(get_option('hs4wp_handle_swf') == 'on') {
+    if(hs4wp_getConf('hs4wp_handle_swf') == 'on') {
       $extension = strtolower(substr($str,strlen($str)-4));
       if($extension == ".swf") {
           if($width  < 100) $width  = "500";
@@ -508,11 +527,20 @@ function hs4wp_add_media_button()
 
 function hs4wp_act(){ 
     if( is_admin() ) {
-        if(get_option('hs4wp_lic_agreement')!='on' && isset($_POST['submitted']) != true) {
+        if(hs4wp_getConf('hs4wp_lic_agreement')!='on' && isset($_POST['submitted']) != true) {
             echo "
             <div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* is almost ready.')."</strong> ".sprintf(__('You must accept the License Agreement and <a href="%1$s">configure</a> it to work.'), "./options-general.php?page=highslide-4-wordpress-reloaded/functions.hs4wp.php")."</p></div>
             ";
         }
+        // compatibility checks:
+            // NextGen Effects:
+            $TEMP = hs4wp_getConf('ngg_options');
+            if($TEMP['thumbEffect'] && $TEMP['thumbEffect'] != "none") {
+                echo "
+                <div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* compatibility Warning!')."</strong><br/> ".sprintf(__('You are using NextGen Galley with enabled JS Image effects. With this settings Highslide won`t work in your site. Please go to the <a href="%1$s">NextGEN Config dialogue</a> and set JavaScript Thumbnail Effect to none.'), "admin.php?page=nggallery-options#effects")."</p></div>
+                ";                    
+            }
+            unset($TEMP);
     }
     return;   
 }
@@ -549,3 +577,28 @@ function hs4wp_plugin_settings_link($links) {
   return $links;
 }
 
+
+
+/**
+ * function hs4wp_getConf
+ * read the Config from WP in case of multisite it return the multisite value as default
+ * @version 1.0
+ * @author Marco 'solariz' Goetze
+ * @return value
+ */
+function hs4wp_getConf($key) 
+{
+    $value = get_option($key);
+    if($value == false) 
+    {
+        // If Multisite installation try to get the global network default
+        if(function_exists('is_multisite')) 
+        {
+            if(is_multisite()) 
+            {
+                $value = get_site_option($key);
+            }
+        }
+    }
+    return $value;
+}

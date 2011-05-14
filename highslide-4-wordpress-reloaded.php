@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Highslide for Wordpress *reloaded*
-Plugin URI: http://solariz.de/highslide4wordpress/
+Plugin URI: http://solariz.de/highslide-wordpress-reloaded
 Description: Add configurable "Highslide JS" Support to your Wordpress Installation, including Auto Image linking.
-Version: 1.21
+Version: 1.22
 Author: Marco Goetze
 Author URI: http://solariz.de
 
@@ -14,8 +14,8 @@ Released under a Creative Commons Attribution-NonCommercial 2.5 License.
 */
 
 // Versions
-    $hs4wp_ver_hs       = 419;
-    $hs4wp_ver_plugin   = 121;
+    $hs4wp_ver_hs       = 4112;
+    $hs4wp_ver_plugin   = 122;
     
 // addon check
     if ( !function_exists( 'add_action' ) ) {
@@ -39,22 +39,23 @@ Released under a Creative Commons Attribution-NonCommercial 2.5 License.
 
 
 // WP Actions & Filter
-    if(get_option('hs4wp_lic_agreement') == "on") {
-      add_filter('the_content', 'hs4wp_auto_set',60);
-      if(get_option('hs4wp_attachment_filter')!="on") add_filter('attachment_link', 'hs4wp_auto_set_attachmentURL',61);
+    if(hs4wp_getConf('hs4wp_lic_agreement') == "on") {
 
-      add_action('wp_head', 'hs4wp_prepare_header');
-	  add_action('wp_footer', 'hs4wp_add_to_footer');
-      // Workaround, some themes using strange wp_footer behaviors
-      // reported 30. Dec. by Max
-      if(get_option('hs4wp_only_use_header')=="on") add_action('wp_head', 'hs4wp_prepare_footer');
-      else add_action('wp_footer', 'hs4wp_prepare_footer');
+        add_filter('the_content', 'hs4wp_auto_set',60);
+        if(hs4wp_getConf('hs4wp_attachment_filter')!="on") add_filter('attachment_link', 'hs4wp_auto_set_attachmentURL',61);
+
+        add_action('wp_head', 'hs4wp_prepare_header');
+        add_action('wp_footer', 'hs4wp_add_to_footer');
+        // Workaround, some themes using strange wp_footer behaviors
+        // reported 30. Dec. by Max
+        if(hs4wp_getConf('hs4wp_only_use_header')=="on") add_action('wp_head', 'hs4wp_prepare_footer');
+        else add_action('wp_footer', 'hs4wp_prepare_footer');
     }
     add_action('admin_init', 'hs4wp_admin_init');
     add_action('admin_print_scripts', 'hs4wp_prepare_adminheader');
     add_action('admin_menu', 'hs4wp_config_page');
     add_filter("plugin_action_links_$plugin", 'hs4wp_plugin_settings_link' );
-    if(get_option('hs4wp_media_icon') != "on") add_action('media_buttons', 'hs4wp_add_media_button', 20);
+    if(hs4wp_getConf('hs4wp_media_icon') != "on") add_action('media_buttons', 'hs4wp_add_media_button', 20);
     
     
     // register_activation_hook(__FILE__, 'hs4wp_act'); 

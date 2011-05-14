@@ -1,10 +1,10 @@
 ﻿=== Highslide 4 Wordpress *reloaded* ===
 Contributors: solariz
 Donate link: http://solariz.de/donate
-Tags: images, highslide, lightbox, popup, image, slideshow, zoom, imagebox
+Tags: images, highslide, lightbox, popup, image, slideshow, zoom, imagebox, expander
 Requires at least: 2.9
-Tested up to: 3.1.1
-Stable tag: 1.21
+Tested up to: 3.2
+Stable tag: 1.22
 
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
@@ -69,6 +69,20 @@ from cheap to expensive.   http://solariz.de/donate
 5. choose many styles or set your own in Advanced
 
 == Changelog ==
+
+= 1.22 =
+* Update to latest Highslide revision 4.1.12
+* * Fixed IE legacy problems 
+* * Fixed Ajax loading problem in IE9
+* * Fixed dimming in IE9
+* CSS now compressed by YUIcompressor 2.4.6 instead of 2.4.2
+* Wordpress Multisite Support, read for info: http://bit.ly/mni0m9
+* HTML Encoding of Special chars for custom Language is done before saving to DB instead on each pageload. So to update your encoding please go to hs4wp settings and do a save!
+* Fixed a bug where special chars in Language could cause a empty string output
+* Fixed a bug caused "Heading source" to be ignored (image title)
+* Added compatibility warning on enabled NextGen JavaScript Effects
+* Added Tweet Button to Config page. Tell others about this Plugin! Thanks
+* btw. received some coffee beans, books and tee. Thanks for all Donators !
 
 = 1.21 =
 * Added Settings Link to Plugin List Page

@@ -14,13 +14,11 @@
 	text-decoration: none;
 }
 .highslide img {
-	border: 0;
+	border: 2px solid silver;
 }
-
 .highslide:hover img {
-        border: 0;
+	border-color: gray;
 }
-
 .highslide-active-anchor img {
 	visibility: hidden;
 }
@@ -117,37 +115,17 @@ a.highslide-credits:hover i {
 .hidden-container {
 	display: none;
 }
-
-
-/* Mac-style close button */
+/* Example of a semitransparent, offset closebutton */
 .closebutton {
-position: relative;
-top: -15px;
-left: 15px;
-width: 30px;
-height: 30px;
-cursor: hand; /* ie */
-cursor: pointer; /* w3c */
-background: url(graphics/close.png);
-/* For IE6, remove background and add filter */
-_background: none;
-_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='graphics/close.png', sizingMethod='scale');
+	position: relative;
+	top: -15px;
+	left: 15px;
+	width: 30px;
+	height: 30px;
+	cursor: pointer;
+	background: url(graphics/close.png);
+	/* NOTE! For IE6, you also need to update the highslide-ie6.css file. */
 }
-
-.closebutton_ipad {
-position: relative;
-top: -28px;
-left: 28px;
-width: 52px;
-height: 53px;
-cursor: hand; /* ie */
-cursor: pointer; /* w3c */
-background: url(graphics/close-ipad.png);
-/* For IE6, remove background and add filter */
-_background: none;
-_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='graphics/close-ipad.png', sizingMethod='none');
-}
-
 
 /*****************************************************************************/
 /* Thumbnail boxes for the galleries.                                        */
@@ -167,6 +145,7 @@ _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='graphics/close-i
 	border: 1px solid silver;
 	background: #ededed;
 	margin: 2px;
+	padding: 0;
 	line-height: 0;
 	overflow: hidden;
 }
