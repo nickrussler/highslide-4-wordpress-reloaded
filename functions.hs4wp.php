@@ -276,7 +276,6 @@ function unhtmlentities($string)
     $trans_tbl = get_html_translation_table(HTML_ENTITIES);
     $trans_tbl = array_flip($trans_tbl);
     $input = strtr($string, $trans_tbl);
-    $output = preg_replace_callback("/(&#[0-9]+;)/", function($m) { return mb_convert_encoding($m[1], "UTF-8", "HTML-ENTITIES"); }, $input);
     $output = cleanString($output);
     if(check_utf8($output) == true) {
        return $output;

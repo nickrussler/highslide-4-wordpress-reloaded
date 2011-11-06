@@ -4,7 +4,7 @@ Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom, imagebox, expander
 Requires at least: 2.9
 Tested up to: 3.2.1
-Stable tag: 1.23
+Stable tag: 1.24
 
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
@@ -69,6 +69,10 @@ from cheap to expensive.   http://solariz.de/donate
 5. choose many styles or set your own in Advanced
 
 == Changelog ==
+
+
+= 1.24 =
+* Hotfix, in 1.23 I used mb_convert_Encoding a function wich only exists in PHP 5.3.x causing a non functional Script in previous PHP Versions. Sorry for this.
 
 = 1.23 =
 * Update to latest Highslide revision 4.1.13
