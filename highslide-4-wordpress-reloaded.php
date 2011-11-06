@@ -3,7 +3,7 @@
 Plugin Name: Highslide for Wordpress *reloaded*
 Plugin URI: http://solariz.de/highslide-wordpress-reloaded
 Description: Add configurable "Highslide JS" Support to your Wordpress Installation, including Auto Image linking.
-Version: 1.22
+Version: 1.23
 Author: Marco Goetze
 Author URI: http://solariz.de
 
@@ -16,13 +16,13 @@ Released under a Creative Commons Attribution-NonCommercial 2.5 License.
 // Versions
     $hs4wp_ver_hs       = 4112;
     $hs4wp_ver_plugin   = 122;
-    
+
 // addon check
     if ( !function_exists( 'add_action' ) ) {
 	echo "Hi there!  I'm just a plugin, not much I can do when called directly.";
 	exit;
-    }    
-    
+    }
+
 // PHP Version check
     if( floatval(phpversion()) < 5 ) {
         // PHP < 5
@@ -56,7 +56,7 @@ Released under a Creative Commons Attribution-NonCommercial 2.5 License.
     add_action('admin_menu', 'hs4wp_config_page');
     add_filter("plugin_action_links_$plugin", 'hs4wp_plugin_settings_link' );
     if(hs4wp_getConf('hs4wp_media_icon') != "on") add_action('media_buttons', 'hs4wp_add_media_button', 20);
-    
-    
-    // register_activation_hook(__FILE__, 'hs4wp_act'); 
+
+
+    // register_activation_hook(__FILE__, 'hs4wp_act');
     add_action('init', 'hs4wp_act');

@@ -3,8 +3,8 @@ Contributors: solariz
 Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom, imagebox, expander
 Requires at least: 2.9
-Tested up to: 3.2
-Stable tag: 1.22
+Tested up to: 3.2.1
+Stable tag: 1.23
 
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
@@ -70,9 +70,18 @@ from cheap to expensive.   http://solariz.de/donate
 
 == Changelog ==
 
+= 1.23 =
+* Update to latest Highslide revision 4.1.13
+* Fixed page dimming problems with iOS and Android
+* Removed Flattr API Call in wp-admin
+* Hopefully fully Fixed the nasty UTF-8 language encoding Bug
+* Fix for wp-admin options dialog. Some Checkbox Settings weren`t saved correctly
+* Fixed IE JS warning reported by neverno & friend if using custom language
+* Added more descriptive warning on sites using Multi WP and NextGen
+
 = 1.22 =
 * Update to latest Highslide revision 4.1.12
-* * Fixed IE legacy problems 
+* * Fixed IE legacy problems
 * * Fixed Ajax loading problem in IE9
 * * Fixed dimming in IE9
 * CSS now compressed by YUIcompressor 2.4.6 instead of 2.4.2
@@ -105,7 +114,7 @@ from cheap to expensive.   http://solariz.de/donate
 * Included more Highslide JS lib codes for centering and slideshow
 * New config option to configure the text output of the plugin, now you can translate the plugins output as you prefer
 * removed CSS Border on hover
-* added requirement check of PHP5.x 
+* added requirement check of PHP5.x
 * changed plugin activation message to appear in admin only
 * update to the lic. agreement text
 * Workaround for attachment images not working, reported by heliblog 12/10

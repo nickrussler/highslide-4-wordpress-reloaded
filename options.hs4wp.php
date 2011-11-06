@@ -4,31 +4,32 @@
 function hs4wp_options_page()
 {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_plugin_path,$wpdb;
-    
+
     $mypage = add_management_page( 'myplugin', 'myplugin', 9, __FILE__, 'myplugin_admin_page' );
     add_action( "admin_print_scripts-$mypage", 'hs4wp_prepare_adminheader' );
 
- 
+
     // If form was submitted
 	if (isset($_POST['submitted']))
 	{
 	        // Save Settings
-            $lic_agreement      =(!isset($_POST['lic_agreement'])? '': $_POST['lic_agreement']);
-            $coralize           =(!isset($_POST['coralize'])? '': $_POST['coralize']);
-            $credits            =(!isset($_POST['credits'])? '': $_POST['credits']);
-            $fadeinout          =(!isset($_POST['fadeinout'])? '': $_POST['fadeinout']);
-            $attachment_filter  =(!isset($_POST['attachment_filter'])? '': $_POST['attachment_filter']);
-            $only_use_header    =(!isset($_POST['only_use_header'])? '': $_POST['only_use_header']);
-            $align_center       =(!isset($_POST['align_center'])? '': $_POST['align_center']);
-            $ext_icon           =(!isset($_POST['ext_icon'])? '': $_POST['ext_icon']);
-            $ptag_workaround    =(!isset($_POST['ptag_workaround'])? '': $_POST['ptag_workaround']);
-            $media_icon         =(!isset($_POST['media_icon'])? '': $_POST['media_icon']);
-            $useFullJS          =(!isset($_POST['useFullJS'])? '': $_POST['useFullJS']);
-            $handle_swf         =(!isset($_POST['handle_swf'])? '': $_POST['handle_swf']);         
-            $disable_slideshow  =(!isset($_POST['disable_slideshow'])? '': $_POST['disable_slideshow']);
-            $disable_ipadfix    =(!isset($_POST['disable_ipadfix'])? '': $_POST['disable_ipadfix']);
-            $disable_closebutton=(!isset($_POST['disable_closebutton'])? '': $_POST['disable_closebutton']);
-            $use_lang           =(!isset($_POST['use_lang'])? '': $_POST['use_lang']);
+            $lic_agreement      =(!isset($_POST['lic_agreement'])? 'off': $_POST['lic_agreement']);
+            $coralize           =(!isset($_POST['coralize'])? 'off': $_POST['coralize']);
+            $credits            =(!isset($_POST['credits'])? 'off': $_POST['credits']);
+            $fadeinout          =(!isset($_POST['fadeinout'])? 'off': $_POST['fadeinout']);
+            //$attachment_filter  =(!isset($_POST['attachment_filter'])? 'off': $_POST['attachment_filter']);
+            $attachment_filter='on';
+            $only_use_header    =(!isset($_POST['only_use_header'])? 'off': $_POST['only_use_header']);
+            $align_center       =(!isset($_POST['align_center'])? 'off': $_POST['align_center']);
+            $ext_icon           =(!isset($_POST['ext_icon'])? 'off': $_POST['ext_icon']);
+            $ptag_workaround    =(!isset($_POST['ptag_workaround'])? 'off': $_POST['ptag_workaround']);
+            $media_icon         =(!isset($_POST['media_icon'])? 'off': $_POST['media_icon']);
+            $useFullJS          =(!isset($_POST['useFullJS'])? 'off': $_POST['useFullJS']);
+            $handle_swf         =(!isset($_POST['handle_swf'])? 'off': $_POST['handle_swf']);
+            $disable_slideshow  =(!isset($_POST['disable_slideshow'])? 'off': $_POST['disable_slideshow']);
+            $disable_ipadfix    =(!isset($_POST['disable_ipadfix'])? 'off': $_POST['disable_ipadfix']);
+            $disable_closebutton=(!isset($_POST['disable_closebutton'])? 'off': $_POST['disable_closebutton']);
+            $use_lang           =(!isset($_POST['use_lang'])? 'off': $_POST['use_lang']);
             $input1             =(!isset($_POST['input1'])? 5: intval($_POST['input1']));
             $input2             =(!isset($_POST['input2'])? '': $_POST['input2']);
             $select1            =(!isset($_POST['select1'])? '': intval($_POST['select1']));
@@ -36,17 +37,17 @@ function hs4wp_options_page()
             $select3            =(!isset($_POST['select3'])? '': intval($_POST['select3']));
             $select4            =(!isset($_POST['select4'])? '': intval($_POST['select4']));
             $textarea1          =(!isset($_POST['textarea1'])? '': stripslashes($_POST['textarea1']));
-            $zinput             =(!isset($_POST['zinput'])? '': intval($_POST['zinput'])); 
-            
+            $zinput             =(!isset($_POST['zinput'])? '': intval($_POST['zinput']));
+
             // Language Inputs
-            $inputL0            =(!isset($_POST['inputL0'])? false: stripslashes($_POST['inputL0'])); 
-            $inputL1            =(!isset($_POST['inputL1'])? false: stripslashes($_POST['inputL1'])); 
-            $inputL2            =(!isset($_POST['inputL2'])? false: stripslashes($_POST['inputL2'])); 
-            $inputL3            =(!isset($_POST['inputL3'])? false: stripslashes($_POST['inputL3'])); 
-            $inputL4            =(!isset($_POST['inputL4'])? false: stripslashes($_POST['inputL4'])); 
-            $inputL5            =(!isset($_POST['inputL5'])? false: stripslashes($_POST['inputL5'])); 
-            $inputL6            =(!isset($_POST['inputL6'])? false: stripslashes($_POST['inputL6'])); 
-            $inputL7            =(!isset($_POST['inputL7'])? false: stripslashes($_POST['inputL7'])); 
+            $inputL0            =(!isset($_POST['inputL0'])? false: stripslashes($_POST['inputL0']));
+            $inputL1            =(!isset($_POST['inputL1'])? false: stripslashes($_POST['inputL1']));
+            $inputL2            =(!isset($_POST['inputL2'])? false: stripslashes($_POST['inputL2']));
+            $inputL3            =(!isset($_POST['inputL3'])? false: stripslashes($_POST['inputL3']));
+            $inputL4            =(!isset($_POST['inputL4'])? false: stripslashes($_POST['inputL4']));
+            $inputL5            =(!isset($_POST['inputL5'])? false: stripslashes($_POST['inputL5']));
+            $inputL6            =(!isset($_POST['inputL6'])? false: stripslashes($_POST['inputL6']));
+            $inputL7            =(!isset($_POST['inputL7'])? false: stripslashes($_POST['inputL7']));
             $inputL8            =(!isset($_POST['inputL8'])? false: stripslashes($_POST['inputL8']));
             $inputL9            =(!isset($_POST['inputL9'])? false: stripslashes($_POST['inputL9']));
             $inputL10           =(!isset($_POST['inputL10'])? false: stripslashes($_POST['inputL10']));
@@ -75,20 +76,20 @@ function hs4wp_options_page()
                 13=>$inputL13,
                 14=>$inputL14,
                 15=>$inputL15,
-                16=>$inputL16                
+                16=>$inputL16
             );
             $TEMP = array();
-            $CUST_ENC = array('À'=>'&Agrave;', 'à'=>'&agrave;', 'Á'=>'&Aacute;', 'á'=>'&aacute;', 'Â'=>'&Acirc;', 'â'=>'&acirc;', 'Ã'=>'&Atilde;', 'ã'=>'&atilde;', 'Ä'=>'&Auml;', 'ä'=>'&auml;', 'Å'=>'&Aring;', 'å'=>'&aring;', 'Æ'=>'&AElig;', 'æ'=>'&aelig;', 'Ç'=>'&Ccedil;', 'ç'=>'&ccedil;', 'Ð'=>'&ETH;', 'ð'=>'&eth;', 'È'=>'&Egrave;', 'è'=>'&egrave;', 'É'=>'&Eacute;', 'é'=>'&eacute;', 'Ê'=>'&Ecirc;', 'ê'=>'&ecirc;', 'Ë'=>'&Euml;', 'ë'=>'&euml;', 'Ì'=>'&Igrave;', 'ì'=>'&igrave;', 'Í'=>'&Iacute;', 'í'=>'&iacute;', 'Î'=>'&Icirc;', 'î'=>'&icirc;', 'Ï'=>'&Iuml;', 'ï'=>'&iuml;', 'Ñ'=>'&Ntilde;', 'ñ'=>'&ntilde;', 'Ò'=>'&Ograve;', 'ò'=>'&ograve;', 'Ó'=>'&Oacute;', 'ó'=>'&oacute;', 'Ô'=>'&Ocirc;', 'ô'=>'&ocirc;', 'Õ'=>'&Otilde;', 'õ'=>'&otilde;', 'Ö'=>'&Ouml;', 'ö'=>'&ouml;', 'Ø'=>'&Oslash;', 'ø'=>'&oslash;', 'Œ'=>'&OElig;', 'œ'=>'&oelig;', 'ß'=>'&szlig;', 'Þ'=>'&THORN;', 'þ'=>'&thorn;', 'Ù'=>'&Ugrave;', 'ù'=>'&ugrave;', 'Ú'=>'&Uacute;', 'ú'=>'&uacute;', 'Û'=>'&Ucirc;', 'û'=>'&ucirc;', 'Ü'=>'&Uuml;', 'ü'=>'&uuml;', 'Ý'=>'&Yacute;', 'ý'=>'&yacute;', 'Ÿ'=>'&Yuml;', 'ÿ'=>'&yuml;');       
+            $CUST_ENC = array('À'=>'&Agrave;', 'à'=>'&agrave;', 'Á'=>'&Aacute;', 'á'=>'&aacute;', 'Â'=>'&Acirc;', 'â'=>'&acirc;', 'Ã'=>'&Atilde;', 'ã'=>'&atilde;', 'Ä'=>'&Auml;', 'ä'=>'&auml;', 'Å'=>'&Aring;', 'å'=>'&aring;', 'Æ'=>'&AElig;', 'æ'=>'&aelig;', 'Ç'=>'&Ccedil;', 'ç'=>'&ccedil;', 'Ð'=>'&ETH;', 'ð'=>'&eth;', 'È'=>'&Egrave;', 'è'=>'&egrave;', 'É'=>'&Eacute;', 'é'=>'&eacute;', 'Ê'=>'&Ecirc;', 'ê'=>'&ecirc;', 'Ë'=>'&Euml;', 'ë'=>'&euml;', 'Ì'=>'&Igrave;', 'ì'=>'&igrave;', 'Í'=>'&Iacute;', 'í'=>'&iacute;', 'Î'=>'&Icirc;', 'î'=>'&icirc;', 'Ï'=>'&Iuml;', 'ï'=>'&iuml;', 'Ñ'=>'&Ntilde;', 'ñ'=>'&ntilde;', 'Ò'=>'&Ograve;', 'ò'=>'&ograve;', 'Ó'=>'&Oacute;', 'ó'=>'&oacute;', 'Ô'=>'&Ocirc;', 'ô'=>'&ocirc;', 'Õ'=>'&Otilde;', 'õ'=>'&otilde;', 'Ö'=>'&Ouml;', 'ö'=>'&ouml;', 'Ø'=>'&Oslash;', 'ø'=>'&oslash;', 'Œ'=>'&OElig;', 'œ'=>'&oelig;', 'ß'=>'&szlig;', 'Þ'=>'&THORN;', 'þ'=>'&thorn;', 'Ù'=>'&Ugrave;', 'ù'=>'&ugrave;', 'Ú'=>'&Uacute;', 'ú'=>'&uacute;', 'Û'=>'&Ucirc;', 'û'=>'&ucirc;', 'Ü'=>'&Uuml;', 'ü'=>'&uuml;', 'Ý'=>'&Yacute;', 'ý'=>'&yacute;', 'Ÿ'=>'&Yuml;', 'ÿ'=>'&yuml;');
             foreach ($LANGARRAY as $key => $value) {
-                $value = htmlentities($value, ENT_QUOTES | ENT_IGNORE,'UTF-8'); 
+                $value = htmlentities($value, ENT_QUOTES | ENT_IGNORE,'UTF-8');
                 foreach ($CUST_ENC as $s => $r) {
                     $value = str_replace($s, $r, $value);
                 }
-                $TEMP[$key] = $value;          
+                $TEMP[$key] = $value;
             }
             $LANGARRAY = $TEMP;
             unset($TEMP,$key,$value,$s,$r,$CUST_ENC);
-            
+
             $HS4WPOPTIONS = array(
                 'hs4wp_lic_agreement' => $lic_agreement,
                 'hs4wp_coralize' => $coralize,
@@ -114,15 +115,16 @@ function hs4wp_options_page()
                 'hs4wp_hs_dimming' => $select2,
                 'hs4wp_hs_caption' => $select3,
                 'hs4wp_hs_heading' => $select4,
-                'hs4wp_advanced' => $textarea1 
+                'hs4wp_advanced' => $textarea1
                 );
-            
+
             // Update Options
             foreach ($HS4WPOPTIONS as $key => $value) {
+                //echo "update_option($key, $value)<br>\n";
                 update_option($key, $value);
             }// End foreach
-            
-            
+
+
             // WPMU Save Global Options
             $MultiSiteMsg = '';
             if(function_exists('is_multisite')) // WP MULTISITE PART
@@ -130,26 +132,26 @@ function hs4wp_options_page()
                 if( is_multisite() && current_user_can('manage_network') )
                 {
                    if($_POST['wpmuhs4wp'] != false)
-                   {                        
+                   {
                         foreach ($HS4WPOPTIONS as $key => $value) {
                             update_site_option($key, $value);
                         }// End foreach
                         $MultiSiteMsg = " Multisite Default values set.";
-                   } 
+                   }
                 }
             }
-            
-          
+
+
             // Show message
             $msg_status = 'Options saved.'.$MultiSiteMsg;
             _e('<div id="message" class="updated fade"><p>' . $msg_status . '</p></div>');
 	}// End If is submitted
 
-        
-        
+
+
 //******* Get current setup from DB
 
-      
+
         $lic_agreement      =( hs4wp_getConf('hs4wp_lic_agreement')=='on' ) ? "checked":"";
         $coralize           =( hs4wp_getConf('hs4wp_coralize')=='on' ) ? "checked":"";
         $credits            =( hs4wp_getConf('hs4wp_credits')=='on' ) ? "checked":"";
@@ -166,15 +168,15 @@ function hs4wp_options_page()
         $disable_closebutton=( hs4wp_getConf('hs4wp_disable_closebutton')=='on' ) ? "checked":"";
         $useFullJS          =( hs4wp_getConf('hs4wp_useFullJS')=='on' ) ? "checked":"";
         $use_lang           =( hs4wp_getConf('hs4wp_use_lang')=='on' ) ? "checked":"";
-        
+
         $slideshow_delay    =  hs4wp_getConf('hs4wp_slideshow_delay');
         $custom_css         =  hs4wp_getConf('hs4wp_custom_css');
         $textarea1          =  hs4wp_getConf('hs4wp_advanced');
         $hszIndex           =  hs4wp_getConf('hs4wp_custom_zindex');
-              
+
         $hs4wp_langtext    = hs4wp_getConf('hs4wp_langtext');
-        
-        
+
+
     // Defaults
         if(!$slideshow_delay) $slideshow_delay = 5;
 
@@ -237,7 +239,7 @@ function hs4wp_options_page()
                     <img src="$imgpath/help.png"><a href="http://solariz.de/highslide-wordpress-reloaded" target="_blank" style="text-decoration:none;"> Plugin Manual</a><br /><br />
                     <img src="$imgpath/donate.png"><a href="http://solariz.de/donate" target="_blank" style="text-decoration:none;"> How to Donate?</a> <br /><br />
                     <img src="$imgpath/star.png"><a href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/" target="_blank" style="text-decoration:none;"> Rate this plugin</a><br /><br />
-                    <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://wordpress.org/extend/plugins/highslide-4-wordpress-reloaded/"></a><br /><br />
+                    <a href="http://flattr.com/thing/116751/Plugin-Highslide-4-Wordpress-reloaded" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a><br /><br />
                     <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://bit.ly/hs4wp" data-text="Checkout this #Wordpress #Plugin - Highslide4Wordpress - Easy Image Expander!" data-count="none" data-via="solariz">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script><br />
                   </ul>
         		<h3>The Author</h3>
@@ -291,8 +293,8 @@ function hs4wp_options_page()
                                 <label for="check2">Disable Highslide Credits ?</label>
                             </div>
                             <div>
-                                <input id="check4" type="checkbox" name="attachment_filter" $attachment_filter />
-                                <label for="check4">Disable  Highslide on Attachment Images ?</label>
+                                <input id="check4" type="checkbox" name="attachment_filter" checked DISABLED />
+                                <label for="check4" style="color:silver">Disable  Highslide on Attachment Images ?</label><br>(<span style="color: red; font-size: xx-small">Since Wordpress 3.x it`s not possible to override the Next Attachment URL so this is currently disabled.</span>)
                             </div>
                             <div>
                                 <input id="check5" type="checkbox" name="align_center" $align_center />
@@ -349,7 +351,7 @@ function hs4wp_options_page()
                             <div>
                                 <input id="Lcheck1" type="checkbox" name="use_lang" $use_lang />
                                 <label for="Lcheck1">Use text below instead of default ?</label>
-                            </div>        
+                            </div>
                                 <input type="text" size="60" name="inputL0" value="$hs4wp_langtext[0]" /><i>(<label for="inputL0">Loading...</label>)</i></br>
                                 <input type="text" size="60" name="inputL1" value="$hs4wp_langtext[1]" /><i>(<label for="inputL1">Click to cancel</label>)</i></br>
                                 <input type="text" size="60" name="inputL2" value="$hs4wp_langtext[2]" /><i>(<label for="inputL2">Click to bring to front</label>)</i></br>
@@ -361,15 +363,15 @@ function hs4wp_options_page()
                                 <input type="text" size="60" name="inputL8" value="$hs4wp_langtext[8]" /><i>(<label for="inputL8">Move</label>)</i></br>
                                 <input type="text" size="60" name="inputL9" value="$hs4wp_langtext[9]" /><i>(<label for="inputL9">Close (esc)</label>)</i></br>
                                 <input type="text" size="60" name="inputL10" value="$hs4wp_langtext[10]" /><i>(<label for="inputL10">Resize</label>)</i></br>
-                                <input type="text" size="60" name="inputL11" value="$hs4wp_langtext[11]" /><i>(<label for="inputL11">Play</label>)</i></br>        
+                                <input type="text" size="60" name="inputL11" value="$hs4wp_langtext[11]" /><i>(<label for="inputL11">Play</label>)</i></br>
                                 <input type="text" size="60" name="inputL12" value="$hs4wp_langtext[12]" /><i>(<label for="inputL12">Play slideshow (spacebar)</label>)</i></br>
                                 <input type="text" size="60" name="inputL13" value="$hs4wp_langtext[13]" /><i>(<label for="inputL13">Pause</label>)</i></br>
                                 <input type="text" size="60" name="inputL14" value="$hs4wp_langtext[14]" /><i>(<label for="inputL14">Pause slideshow (spacebar)</label>)</i></br>
                                 <input type="text" size="60" name="inputL15" value="$hs4wp_langtext[15]" /><i>(<label for="inputL15">Previous (arrow left)</label>)</i></br>
                                 <input type="text" size="60" name="inputL16" value="$hs4wp_langtext[16]" /><i>(<label for="inputL16">Next (arrow right)</label>)</i></br>
                             </ul>
-                            <div class="submit"><input type="submit" name="Submit" value="Save options" /></div>        
-        
+                            <div class="submit"><input type="submit" name="Submit" value="Save options" /></div>
+
                             <h3>Advanced Options<span>[<a href="http://solariz.de/highslide-wordpress-reloaded#advanced" target="hs4wpHelp">help</a>]</span></h3>
                             <ul>
                             <div>
@@ -400,7 +402,7 @@ function hs4wp_options_page()
                                 <input id="zinput" type="text" size="4" name="zinput" value="$hszIndex" />
                                 <label for="zinput"> Z-Index of highslide window.<br/>
                                 <small>If neccesary raise this value to make Highslide appear on top. Empty for default (1001).</small></label>
-                            </div>         
+                            </div>
                             <hr>
                             <div>
                                 <label for="input2">Use custom <b>highslide.css</b> ?</label><br/>
@@ -417,7 +419,7 @@ function hs4wp_options_page()
                             </ul>
                             <div class="submit"><input type="submit" name="Submit" value="Save options" /></div>
 END;
-        
+
     if(function_exists('is_multisite')) // WP MULTISITE PART
     {
         if( is_multisite() && current_user_can('manage_network') )
@@ -428,7 +430,7 @@ echo <<<END
     <div>
         Some HS4WP Users asked me to integrate a full Wordpress Multipage support. Well, this section is kind of. I`m never worked with WPMU for myself so its hard to get a full understanding of the different API functions. Also not every function is as well documented as it should. So please see this part currently just as a experimental enhanced workaround. <br />
         <h4>How does it work ?</h4>
-        Well you only see this Section if you are in a level of a Networkadmin, normal site admins just see the default HS4WP settings without this part. 
+        Well you only see this Section if you are in a level of a Networkadmin, normal site admins just see the default HS4WP settings without this part.
        <br/><br/>
         <div>
             <input id="input_wpmuhs4wp" type="checkbox" name="wpmuhs4wp" />
@@ -440,11 +442,11 @@ echo <<<END
 END;
         }
     }// END OF MULTISITE PART
-      
-        
-                           
-            			
+
+
+
+
 echo "</form></div></div></div></div></div>";
-    
+
 }
 // EOF

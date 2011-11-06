@@ -10,10 +10,10 @@
 function hs4wp_prepare_header() {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_ver_plugin;
     $custom_css = hs4wp_getConf('hs4wp_custom_css');
-    
+
     // check if min or full versions should be used
     $CSSJS = array();
-    if(hs4wp_getConf('hs4wp_useFullJS') == 'on') {    
+    if(hs4wp_getConf('hs4wp_useFullJS') == 'on') {
         // FULL
         $CSSJS['hs']        = 'highslide.full.css';
         $CSSJS['hsmsie']    = 'highslide-ie6.full.css';
@@ -22,9 +22,9 @@ function hs4wp_prepare_header() {
         // DEFAULT - minified versions
         $CSSJS['hs']        = 'highslide.min.css';
         $CSSJS['hsmsie']    = 'highslide-ie6.min.css';
-        $CSSJS['hsjs']      = 'highslide.min.js';               
+        $CSSJS['hsjs']      = 'highslide.min.js';
     }
-    
+
     $hs_css_uri = (strlen($custom_css)>=5)?$custom_css."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin:$hs4wp_plugin_uri.$CSSJS['hs']."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
     $coralize= hs4wp_getConf('hs4wp_coralize');
     if($coralize != "" && $coralize != false) {
@@ -49,12 +49,12 @@ function hs4wp_prepare_footer() {
     GLOBAL $hs4wp_plugin_uri,$hs4wp_ver_hs,$hs4wp_ver_plugin,$hs4wp_img_count;
     $isiPad = (bool) strpos($_SERVER['HTTP_USER_AGENT'],'iPad');
 
-    // check if min or full versions should be used     
-    if(hs4wp_getConf('hs4wp_useFullJS') == 'on') { 
+    // check if min or full versions should be used
+    if(hs4wp_getConf('hs4wp_useFullJS') == 'on') {
         $hsjs = 'highslide.full.js';
     } else {
         $hsjs = 'highslide.min.js';
-    }  
+    }
     $coralize= hs4wp_getConf('hs4wp_coralize');
     $hs_script_uri = $hs4wp_plugin_uri.$hsjs."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
     $hs_graphics_uri = $hs4wp_plugin_uri."graphics/";
@@ -106,10 +106,10 @@ function hs4wp_prepare_footer() {
             $OUT .= "hs.headingEval = 'this.a.title';\n";
             break;
         DEFAULT:
-            break;        
+            break;
     }
-    
-    
+
+
     // Style Definitions
     switch(hs4wp_getConf('hs4wp_hs_appearance')) {
         CASE 1:
@@ -227,11 +227,17 @@ function hs4wp_prepare_footer() {
     }
     // Custom language / translation option
     if( hs4wp_getConf('hs4wp_use_lang')=='on' ) {
-        $cust_lang    = hs4wp_getConf('hs4wp_langtext'); 
+        $cust_lang    = hs4wp_getConf('hs4wp_langtext');
+
+        // Fix for Foreign Char Encodings
+        foreach ($cust_lang as $k => $v) {
+            $cust_lang[$k] =    addslashes(unhtmlentities($v));
+        }
+
         $OUT .= "hs.lang = {";
         if($cust_lang[0]) $OUT .= "loadingText : '".$cust_lang[0]."',\n";
-        if($cust_lang[1]) $OUT .= "loadingTitle : '".$cust_lang[1]."',\n";        
-        if($cust_lang[2]) $OUT .= "focusTitle : '".$cust_lang[2]."',\n";        
+        if($cust_lang[1]) $OUT .= "loadingTitle : '".$cust_lang[1]."',\n";
+        if($cust_lang[2]) $OUT .= "focusTitle : '".$cust_lang[2]."',\n";
         if($cust_lang[3]) $OUT .= "restoreTitle : '".$cust_lang[3]."',\n";
         if($cust_lang[4]) $OUT .= "fullExpandTitle : '".$cust_lang[4]."',\n";
         if($cust_lang[5]) $OUT .= "previousText : '".$cust_lang[5]."',\n";
@@ -246,13 +252,85 @@ function hs4wp_prepare_footer() {
         if($cust_lang[13]) $OUT .= "pauseText : '".$cust_lang[13]."',\n";
         if($cust_lang[14]) $OUT .= "pauseTitle : '".$cust_lang[14]."',\n";
         if($cust_lang[15]) $OUT .= "previousTitle : '".$cust_lang[15]."',\n";
-        if($cust_lang[16]) $OUT .= "nextTitle : '".$cust_lang[16]."',\n";
-        $OUT .= "}";       
-    }    
+        if($cust_lang[16]) $OUT .= "nextTitle : '".$cust_lang[16]."'\n";
+        $OUT .= "}";
+    }
     $OUT .= "</script>\n";
 
     echo $OUT;
 }//EoFu: hs4wp_prepare_footer
+
+
+/**
+ * function unhtmlentities
+ * Convert String to UTF-8 without Entities
+ * @version 1.0
+ * @return string
+ */
+function unhtmlentities($string)
+{
+    // replace numeric entities
+    $string = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $string);
+    $string = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $string);
+    // replace literal entities
+    $trans_tbl = get_html_translation_table(HTML_ENTITIES);
+    $trans_tbl = array_flip($trans_tbl);
+    $input = strtr($string, $trans_tbl);
+    $output = preg_replace_callback("/(&#[0-9]+;)/", function($m) { return mb_convert_encoding($m[1], "UTF-8", "HTML-ENTITIES"); }, $input);
+    $output = cleanString($output);
+    if(check_utf8($output) == true) {
+       return $output;
+    } else {
+    return utf8_encode($output);
+    }
+}
+
+
+/**
+ * function cleanString
+ * Clean String of remaining Entities
+ * @version 1.0
+ * @return string
+ */
+function cleanString($in,$offset=null)
+{
+    $out = trim($in);
+    if (!empty($out))
+    {
+        $entity_start = strpos($out,'&',$offset);
+        if ($entity_start === false)
+        {
+            // ideal
+            return $out;
+        }
+        else
+        {
+            $entity_end = strpos($out,';',$entity_start);
+            if ($entity_end === false)
+            {
+                 return $out;
+            }
+            // zu lang um eine entity zu sein
+            else if ($entity_end > $entity_start+7)
+            {
+                 // und weiter gehts
+                 $out = cleanString($out,$entity_start+1);
+            }
+            // gottcha!
+            else
+            {
+                 $clean = substr($out,0,$entity_start);
+                 $subst = substr($out,$entity_start+1,1);
+                 // &scaron; => "s" / &#353; => "_"
+                 $clean .= ($subst != "#") ? $subst : "_";
+                 $clean .= substr($out,$entity_end+1);
+                 // und weiter gehts
+                 $out = cleanString($clean,$entity_start+1);
+            }
+        }
+    }
+    return $out;
+}
 
 
 /**
@@ -287,14 +365,14 @@ function hs4wp_add_to_footer() {
  */
 function hs4wp_config_page() {
     GLOBAL $hs4wp_plugin_path;
-    if (current_user_can('manage_options')) 
+    if (current_user_can('manage_options'))
     {
-        if (function_exists('add_options_page')) 
+        if (function_exists('add_options_page'))
         {
             require_once($hs4wp_plugin_path.'options.hs4wp.php');
             add_options_page('highslide 4 Wordpress *reloaded* Settings', 'Highslide 4 Wordpress', 8, __FILE__, 'hs4wp_options_page');
         }
-    }   
+    }
 }
 
 /**
@@ -372,17 +450,17 @@ function hs4wp_callback_htm($a) {
       $regex .= "(\:[0-9]{2,5})?"; // Port
       $regex .= "(\/([a-z0-9+\$_-]\.?)+)*\/?"; // Path
       $regex .= "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query
-      $regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor 
+      $regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor
       if(preg_match("/^".$regex."$/i",$linkName)) {
         // check for known image types
           if(preg_match("/\.[jpe?g|gif|png]/i", $linkName)) {
             $Print_linkName = "<img src=\"".$linkName."\" class=\"highslide-expander-image\" alt=\"".htmlentities($subject,ENT_QUOTES,'UTF-8')."\" title=\"".htmlentities($subject,ENT_QUOTES,'UTF-8')."\">";
           }
-      } 
-   
-      
-      
-      
+      }
+
+
+
+
       $OUT .= '} )" href="#">'.$img." ".$Print_linkName.'</a>';
       $str = str_replace($reg[0],"",$str);
     } else {
@@ -473,12 +551,15 @@ function hs4wp_callback_img($a) {
  */
 function hs4wp_auto_set_attachmentURL($url) {
     GLOBAL $attachment_id,$hs4wp_attachment_workaround;
-    if($attachment_id < 1 || wp_attachment_is_image($attachment_id) != true) return $url;      
+    #if($attachment_id < 1 || wp_attachment_is_image($attachment_id) != true) return $url;
     // chek if URL already contain highslide parts
     if(stripos($url,"highslide") == false && stripos($url,"onclick") == false && is_attachment() == true) {
+
         if($hs4wp_attachment_workaround == 1) {
+
             $url = wp_get_attachment_url($attachment_id);
             $url = $url."\" class=\"highslide\" onclick=\"return hs.expand(this)";
+            #die("attachment handler 3: $url");
         }
         ++$hs4wp_attachment_workaround;
     }
@@ -509,10 +590,10 @@ function hs4wp_selector($array,$selected=false) {
 function hs4wp_admin_init()
 {
     GLOBAL $hs4wp_plugin_uri;
-    $hs4wpOptionsCSS = $hs4wp_plugin_uri."options.full.css";    
+    $hs4wpOptionsCSS = $hs4wp_plugin_uri."options.full.css";
     if (is_ssl()) $hs4wpOptionsCSS = preg_replace( '/^http:\/\//', 'https://',  $hs4wpOptionsCSS );
     wp_register_style('hs4wpOptionsCSS', $hs4wpOptionsCSS);
-    wp_enqueue_style( 'hs4wpOptionsCSS');   
+    wp_enqueue_style( 'hs4wpOptionsCSS');
 }
 
 function hs4wp_add_media_button()
@@ -525,7 +606,7 @@ function hs4wp_add_media_button()
 
 
 
-function hs4wp_act(){ 
+function hs4wp_act(){
     if( is_admin() ) {
         if(hs4wp_getConf('hs4wp_lic_agreement')!='on' && isset($_POST['submitted']) != true) {
             echo "
@@ -537,36 +618,25 @@ function hs4wp_act(){
             $TEMP = hs4wp_getConf('ngg_options');
             if($TEMP['thumbEffect'] && $TEMP['thumbEffect'] != "none") {
                 echo "
-                <div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* compatibility Warning!')."</strong><br/> ".sprintf(__('You are using NextGen Galley with enabled JS Image effects. With this settings Highslide won`t work in your site. Please go to the <a href="%1$s">NextGEN Config dialogue</a> and set JavaScript Thumbnail Effect to none.'), "admin.php?page=nggallery-options#effects")."</p></div>
-                ";                    
+                <div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* compatibility Warning!')."</strong><br/> ".sprintf(__('You are using NextGen Galley with enabled JS Image effects. With this settings Highslide won`t work in your site. Please go to the <a href="%1$s">NextGEN Config dialogue</a> and set JavaScript Thumbnail Effect to none.<br><br>If you using wordpress on a WP Multi site please first select the networksite using NextGEN and than turn of the NextGEN JS Effect for this site.'), "admin.php?page=nggallery-options#effects")."</p></div>
+                ";
             }
             unset($TEMP);
     }
-    return;   
+    return;
 }
 
 
 
 /**
  * function hs4wp_prepare_adminheader
- * Add neccesary Flattr JS to Admin Head - only on HS4WP Page
- * @version 1.0
+ * Add neccesary JS to Admin Head - only on HS4WP Page
+ * @version 1.1
  * @author Marco 'solariz' Goetze
  * @return bool
  */
 function hs4wp_prepare_adminheader() {
-    echo "
-<script type=\"text/javascript\">
-/* <![CDATA[ */
-    (function() {
-        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
-        s.type = 'text/javascript';
-        s.async = true;
-        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
-        t.parentNode.insertBefore(s, t);
-    })();
-/* ]]> */
-</script>";
+       // Since v 1.23 of this plugin no additional JS is needed
 }
 
 
@@ -586,19 +656,49 @@ function hs4wp_plugin_settings_link($links) {
  * @author Marco 'solariz' Goetze
  * @return value
  */
-function hs4wp_getConf($key) 
+function hs4wp_getConf($key)
 {
     $value = get_option($key);
-    if($value == false) 
+    if($value == false)
     {
         // If Multisite installation try to get the global network default
-        if(function_exists('is_multisite')) 
+        if(function_exists('is_multisite'))
         {
-            if(is_multisite()) 
+            if(is_multisite())
             {
                 $value = get_site_option($key);
             }
         }
     }
+    if(strtolower($value) == "off") $value = false;
     return $value;
 }
+
+/**
+ * function check_utf8
+ * RFC3629 check if a string is encoded correctly in utf-8
+ * @version 1.0
+ * @author javalc6 at gmail dot com
+ * @return value
+ */
+function check_utf8($str) {
+    $len = strlen($str);
+    for($i = 0; $i < $len; $i++){
+        $c = ord($str[$i]);
+        if ($c > 128) {
+            if (($c > 247)) return false;
+            elseif ($c > 239) $bytes = 4;
+            elseif ($c > 223) $bytes = 3;
+            elseif ($c > 191) $bytes = 2;
+            else return false;
+            if (($i + $bytes) > $len) return false;
+            while ($bytes > 1) {
+                $i++;
+                $b = ord($str[$i]);
+                if ($b < 128 || $b > 191) return false;
+                $bytes--;
+            }
+        }
+    }
+    return true;
+} // end of check_utf8
