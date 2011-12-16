@@ -227,8 +227,8 @@ function hs4wp_prepare_footer() {
     }
     // Custom language / translation option
     if( hs4wp_getConf('hs4wp_use_lang')=='on' ) {
-        $cust_lang    = hs4wp_getConf('hs4wp_langtext');
 
+        $cust_lang    = hs4wp_getConf('hs4wp_langtext');
         // Fix for Foreign Char Encodings
         foreach ($cust_lang as $k => $v) {
             $cust_lang[$k] =    addslashes(unhtmlentities($v));
@@ -267,68 +267,15 @@ function hs4wp_prepare_footer() {
  * @version 1.0
  * @return string
  */
-function unhtmlentities($string)
-{
-    // replace numeric entities
-    $string = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $string);
-    $string = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $string);
-    // replace literal entities
-    $trans_tbl = get_html_translation_table(HTML_ENTITIES);
-    $trans_tbl = array_flip($trans_tbl);
-    $input = strtr($string, $trans_tbl);
-    $output = cleanString($output);
-    if(check_utf8($output) == true) {
-       return $output;
-    } else {
-    return utf8_encode($output);
-    }
-}
-
-
-/**
- * function cleanString
- * Clean String of remaining Entities
- * @version 1.0
- * @return string
- */
-function cleanString($in,$offset=null)
-{
-    $out = trim($in);
-    if (!empty($out))
-    {
-        $entity_start = strpos($out,'&',$offset);
-        if ($entity_start === false)
-        {
-            // ideal
-            return $out;
-        }
-        else
-        {
-            $entity_end = strpos($out,';',$entity_start);
-            if ($entity_end === false)
-            {
-                 return $out;
+function unhtmlentities($string) { // From php.net for < 4.3 compat
+            $trans_tbl = get_html_translation_table(HTML_ENTITIES);
+            $trans_tbl = array_flip($trans_tbl);
+            $output = strtr($string, $trans_tbl);
+            if(check_utf8($output) == true) {
+                return $output;
+            } else {
+                return utf8_encode($output);
             }
-            // zu lang um eine entity zu sein
-            else if ($entity_end > $entity_start+7)
-            {
-                 // und weiter gehts
-                 $out = cleanString($out,$entity_start+1);
-            }
-            // gottcha!
-            else
-            {
-                 $clean = substr($out,0,$entity_start);
-                 $subst = substr($out,$entity_start+1,1);
-                 // &scaron; => "s" / &#353; => "_"
-                 $clean .= ($subst != "#") ? $subst : "_";
-                 $clean .= substr($out,$entity_end+1);
-                 // und weiter gehts
-                 $out = cleanString($clean,$entity_start+1);
-            }
-        }
-    }
-    return $out;
 }
 
 
@@ -669,7 +616,7 @@ function hs4wp_getConf($key)
             }
         }
     }
-    if(strtolower($value) == "off") $value = false;
+    if(@$value == "off" || isset($value) != true) $value = false;
     return $value;
 }
 

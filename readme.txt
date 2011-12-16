@@ -3,8 +3,8 @@ Contributors: solariz
 Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom, imagebox, expander
 Requires at least: 2.9
-Tested up to: 3.2.1
-Stable tag: 1.24
+Tested up to: 3.3
+Stable tag: 1.25
 
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
@@ -70,6 +70,11 @@ from cheap to expensive.   http://solariz.de/donate
 
 == Changelog ==
 
+= 1.25 =
+* Small fixes for WP 3.3:
+* Line 672 Error fixed
+* Translated Language not showing up, fixed
+* z_Index default to 10003
 
 = 1.24 =
 * Hotfix, in 1.23 I used mb_convert_Encoding a function wich only exists in PHP 5.3.x causing a non functional Script in previous PHP Versions. Sorry for this.

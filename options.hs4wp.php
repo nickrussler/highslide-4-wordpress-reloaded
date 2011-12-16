@@ -38,6 +38,8 @@ function hs4wp_options_page()
             $select4            =(!isset($_POST['select4'])? '': intval($_POST['select4']));
             $textarea1          =(!isset($_POST['textarea1'])? '': stripslashes($_POST['textarea1']));
             $zinput             =(!isset($_POST['zinput'])? '': intval($_POST['zinput']));
+            if(!$zinput)        $zinput = 10003;
+
 
             // Language Inputs
             $inputL0            =(!isset($_POST['inputL0'])? false: stripslashes($_POST['inputL0']));
@@ -401,7 +403,7 @@ function hs4wp_options_page()
                             <div>
                                 <input id="zinput" type="text" size="4" name="zinput" value="$hszIndex" />
                                 <label for="zinput"> Z-Index of highslide window.<br/>
-                                <small>If neccesary raise this value to make Highslide appear on top. Empty for default (1001).</small></label>
+                                <small>If neccesary raise this value to make Highslide appear on top. Empty for default (10003).</small></label>
                             </div>
                             <hr>
                             <div>
