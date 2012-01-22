@@ -1,5 +1,5 @@
 /**
-* @file: highslide.css 
+* @file: highslide.css
 * @version: 4.1.9
 */
 .highslide-container div {
@@ -464,7 +464,7 @@ html>/**/body .highslide-gallery ul img {
 	border: 5px solid #444444;
 	border-top: none;
 	padding: 5px;
-	background-color: gray;
+	background-color: transparent;
 }
 
 /* hs.wrapperClassName = 'colored-border' */
@@ -485,7 +485,7 @@ html>/**/body .highslide-gallery ul img {
 }
 .dark .highslide-image {
 	border-color: black black #202020 black;
-	background: gray;
+	background: transparent;
 }
 .dark .highslide-caption {
 	color: white;

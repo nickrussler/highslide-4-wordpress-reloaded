@@ -26,7 +26,7 @@ function hs4wp_prepare_header() {
     }
 
     $hs_css_uri = (strlen($custom_css)>=5)?$custom_css."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin:$hs4wp_plugin_uri.$CSSJS['hs']."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
-    $coralize= hs4wp_getConf('hs4wp_coralize');
+    $coralize= false;  // Currently forced off, not working anymore
     if($coralize != "" && $coralize != false) {
         $hs_css_uri = hs4wp_coralize_uri($hs_css_uri);
     }
@@ -55,7 +55,7 @@ function hs4wp_prepare_footer() {
     } else {
         $hsjs = 'highslide.min.js';
     }
-    $coralize= hs4wp_getConf('hs4wp_coralize');
+    $coralize= false; // Off, not working anymore
     $hs_script_uri = $hs4wp_plugin_uri.$hsjs."?ver=".$hs4wp_ver_hs."v".$hs4wp_ver_plugin;
     $hs_graphics_uri = $hs4wp_plugin_uri."graphics/";
     if($coralize != "" && $coralize != false) {
@@ -71,7 +71,7 @@ function hs4wp_prepare_footer() {
     } elseif(hs4wp_getConf('hs4wp_disable_closebutton') != true && hs4wp_getConf('hs4wp_hs_heading') == false) {
         $OUT .= '<div id="closebutton" class="highslide-overlay closebutton" onclick="return hs.close(this)" title="Close"></div>'."\n";
     }
-    $OUT .= '<a href="http://solariz.de/highslide-wordpress-reloaded" title="Highslide for Wordpress Plugin" style="display:none">Highslide for Wordpress Plugin</a>'."\n";
+    $OUT .= '<a href="http://ucardo.com" title="The Smart QR Code on your Business Card" style="display:none">QR Code Business Card</a>'."\n";
     $OUT .= '<script type="text/javascript" src="'.$hs_script_uri.'"></script>';
     $OUT .= '<script type="text/javascript">'."\n";
     $OUT .= "hs.graphicsDir = '".$hs_graphics_uri."';\n";
@@ -200,7 +200,9 @@ function hs4wp_prepare_footer() {
       $OUT .= hs4wp_getConf('hs4wp_advanced');
 	// Add the controlbar
     if($hs4wp_img_count > 1 && hs4wp_getConf('hs4wp_disable_slideshow') == false) {
-      $OUT .= "if (hs.addSlideshow) hs.addSlideshow({\n";
+      //$OUT .= "if (hs.addSlideshow) hs.addSlideshow({\n";
+      $OUT .= "hs.addSlideshow({";
+      $OUT .= "slideshowGroup: 'group1',";
       $interval = intval(hs4wp_getConf('hs4wp_slideshow_delay')*1000);
       if($interval < 1000) $interval = 5000;
       $OUT .= "\tinterval: ".$interval.",\n";
@@ -208,7 +210,12 @@ function hs4wp_prepare_footer() {
       $OUT .= "\tuseControls: true,\n";
       $OUT .= "\tfixedControls: 'fit',\n";
       $OUT .= "\toverlayOptions: {\n";
-      $OUT .= "\t\tposition: 'bottom center',\n";
+
+      if(hs4wp_getConf('hs4wp_align_center')=="on") {
+            $OUT .= "\t\tposition: 'center center',\n";
+      } else {
+            $OUT .= "\t\tposition: 'bottom center',\n";
+      }
       if(hs4wp_getConf('hs4wp_disable_ipadfix') != true && $isiPad) {
           $OUT .= "\t\topacity: 1,\n";
           $OUT .= "\t\thideOnMouseOut: false\n";
@@ -255,8 +262,16 @@ function hs4wp_prepare_footer() {
         if($cust_lang[16]) $OUT .= "nextTitle : '".$cust_lang[16]."'\n";
         $OUT .= "}";
     }
+    // Gallery Config Object
+    $OUT .= "var config1 = {\n";
+    $OUT .= "slideshowGroup: 'group1',\n";
+    $OUT .= "transitions: ['expand', 'crossfade']};\n";
     $OUT .= "</script>\n";
-
+    // JSMin minify config:
+    if(hs4wp_getConf('hs4wp_disableJSmin') != true) {
+        require_once'jsmin.php';
+        $OUT = JSMin::minify($OUT);
+    }
     echo $OUT;
 }//EoFu: hs4wp_prepare_footer
 

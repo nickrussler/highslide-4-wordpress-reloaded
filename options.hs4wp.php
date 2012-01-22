@@ -14,7 +14,7 @@ function hs4wp_options_page()
 	{
 	        // Save Settings
             $lic_agreement      =(!isset($_POST['lic_agreement'])? 'off': $_POST['lic_agreement']);
-            $coralize           =(!isset($_POST['coralize'])? 'off': $_POST['coralize']);
+            $coralize           = false; // STAY OFF DONT WORK !
             $credits            =(!isset($_POST['credits'])? 'off': $_POST['credits']);
             $fadeinout          =(!isset($_POST['fadeinout'])? 'off': $_POST['fadeinout']);
             //$attachment_filter  =(!isset($_POST['attachment_filter'])? 'off': $_POST['attachment_filter']);
@@ -25,6 +25,7 @@ function hs4wp_options_page()
             $ptag_workaround    =(!isset($_POST['ptag_workaround'])? 'off': $_POST['ptag_workaround']);
             $media_icon         =(!isset($_POST['media_icon'])? 'off': $_POST['media_icon']);
             $useFullJS          =(!isset($_POST['useFullJS'])? 'off': $_POST['useFullJS']);
+            $disableJSmin          =(!isset($_POST['disableJSmin'])? 'off': $_POST['disableJSmin']);
             $handle_swf         =(!isset($_POST['handle_swf'])? 'off': $_POST['handle_swf']);
             $disable_slideshow  =(!isset($_POST['disable_slideshow'])? 'off': $_POST['disable_slideshow']);
             $disable_ipadfix    =(!isset($_POST['disable_ipadfix'])? 'off': $_POST['disable_ipadfix']);
@@ -117,7 +118,8 @@ function hs4wp_options_page()
                 'hs4wp_hs_dimming' => $select2,
                 'hs4wp_hs_caption' => $select3,
                 'hs4wp_hs_heading' => $select4,
-                'hs4wp_advanced' => $textarea1
+                'hs4wp_advanced' => $textarea1,
+                'hs4wp_disableJSmin'=> $disableJSmin
                 );
 
             // Update Options
@@ -155,7 +157,7 @@ function hs4wp_options_page()
 
 
         $lic_agreement      =( hs4wp_getConf('hs4wp_lic_agreement')=='on' ) ? "checked":"";
-        $coralize           =( hs4wp_getConf('hs4wp_coralize')=='on' ) ? "checked":"";
+        //$coralize           =   ( hs4wp_getConf('hs4wp_coralize')=='on' ) ? "checked":"";
         $credits            =( hs4wp_getConf('hs4wp_credits')=='on' ) ? "checked":"";
         $fadeinout          =( hs4wp_getConf('hs4wp_fadeinout')=='on' ) ? "checked":"";
         $attachment_filter  =( hs4wp_getConf('hs4wp_attachment_filter')=='on' ) ? "checked":"";
@@ -170,6 +172,7 @@ function hs4wp_options_page()
         $disable_closebutton=( hs4wp_getConf('hs4wp_disable_closebutton')=='on' ) ? "checked":"";
         $useFullJS          =( hs4wp_getConf('hs4wp_useFullJS')=='on' ) ? "checked":"";
         $use_lang           =( hs4wp_getConf('hs4wp_use_lang')=='on' ) ? "checked":"";
+        $disableJSmin       =( hs4wp_getConf('hs4wp_disableJSmin')=='on' ) ? "checked":"";
 
         $slideshow_delay    =  hs4wp_getConf('hs4wp_slideshow_delay');
         $custom_css         =  hs4wp_getConf('hs4wp_custom_css');
@@ -246,7 +249,7 @@ function hs4wp_options_page()
                   </ul>
         		<h3>The Author</h3>
                     <div class="infoBox">
-                    <small><img src="$imgpath/mg.png" style="float:right; margin-right: -16px; padding: 2px;">Just in some short words. I doing "web stuff" since my early youth, I had the possibility to accompany the development of the Internet since the early 90's. Currently I'm living in Bochum, Germany. You can find more information on my <a href="http://solariz.de">blog</a>.</small>
+                    <small><img src="$imgpath/mg.png" style="float:right; margin-right: -16px; padding: 2px;">Just in some short words. I doing "web stuff" since my early youth, I had the possibility to accompany the development of the Internet since the early 90's. Currently I'm living in Bochum, Germany. You can find more information in my <a href="http://solariz.de/aboutme">blog/aboutme</a>.</small>
                     </div>
              	</div>
                 <div id="mainblock" style="max-width:650px">
@@ -283,8 +286,10 @@ function hs4wp_options_page()
                             <h3>Options<span>[<a href="http://solariz.de/highslide-wordpress-reloaded#options" target="hs4wpHelp">help</a>]</span></h3>
                             <ul>
                             <div>
-                                <input id="check1" type="checkbox" name="coralize" $coralize />
-                                <label for="check1">Use Coral CDN as JS/CSS source</label>
+                                <input id="check1" type="checkbox" name="coralize" DISABLED />
+                                <label for="check1" style="color:silver">Use Coral CDN as JS/CSS source</label>
+                                <br>(<span style="color: red; font-size: xx-small">Force disabled</span>) Due to problems with Coral CDN this Free CDN Method is now disabled. Caused more problems than it actually helped.
+                                I Currently estimate if Highslide Users interested in using a Content Delivery Network (CDN) to improve the load of Highslide. Please take part on this little Poll to give me your <a href="http://polldaddy.com/poll/5843108/">oppinion</a>.<br>
                             </div>
                             <div>
                                 <input id="check3" type="checkbox" name="fadeinout" $fadeinout />
@@ -321,6 +326,10 @@ function hs4wp_options_page()
                             <div>
                                 <input id="check10" type="checkbox" name="disable_closebutton" $disable_closebutton />
                                 <label for="check10">Disable close button on expanded images.</label>
+                            </div>
+                            <div>
+                                <input id="check11" type="checkbox" name="disableJSmin" $disableJSmin />
+                                <label for="check11">Disable the use ofJSmin to minify embeded HS JS Code Config</label>
                             </div>
                             <br/>
                             <!-- left aligned input -->
@@ -421,6 +430,15 @@ function hs4wp_options_page()
                             </ul>
                             <div class="submit"><input type="submit" name="Submit" value="Save options" /></div>
 END;
+
+// CDN POLL
+echo '<script type="text/javascript" src="http://i0.poll.fm/survey.js" charset="UTF-8"></script>';
+echo '<script type="text/javascript" charset="utf-8">';
+echo 'var pd_tags = new Array;';
+echo "pd_tags['customer_ref'] = '".get_settings('admin_email')."';";
+echo "polldaddy.add( {type: 'slider',embed: 'poll', delay: 250,visit: 'single',id: 5843108});</script>";
+
+
 
     if(function_exists('is_multisite')) // WP MULTISITE PART
     {

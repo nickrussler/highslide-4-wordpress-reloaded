@@ -3,8 +3,8 @@ Contributors: solariz
 Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom, imagebox, expander
 Requires at least: 2.9
-Tested up to: 3.3
-Stable tag: 1.25
+Tested up to: 3.3.1
+Stable tag: 1.26
 
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
@@ -69,6 +69,14 @@ from cheap to expensive.   http://solariz.de/donate
 5. choose many styles or set your own in Advanced
 
 == Changelog ==
+
+= 1.26 =
+* Switched to YUI compressor 2.4.7
+* Fixed CSS gray Transition Bug reported by Kiri
+* Several minor cleanups
+* Removed Coral CDN due to the fact that it isnt working anymore. Please fill in my Poll ( http://poll.fm/3h8kk ) if you are used this option before!
+* Tested with WP 3.3.1
+* Added JSMin by Douglas Crockford to keep a small footprint of the embeded HS config (can be disabled in settings)
 
 = 1.25 =
 * Small fixes for WP 3.3:
