@@ -260,7 +260,7 @@ function hs4wp_prepare_footer() {
         if($cust_lang[14]) $OUT .= "pauseTitle : '".$cust_lang[14]."',\n";
         if($cust_lang[15]) $OUT .= "previousTitle : '".$cust_lang[15]."',\n";
         if($cust_lang[16]) $OUT .= "nextTitle : '".$cust_lang[16]."'\n";
-        $OUT .= "}";
+        $OUT .= "};";
     }
     // Gallery Config Object
     $OUT .= "var config1 = {\n";
@@ -570,17 +570,15 @@ function hs4wp_add_media_button()
 function hs4wp_act(){
     if( is_admin() ) {
         if(hs4wp_getConf('hs4wp_lic_agreement')!='on' && isset($_POST['submitted']) != true) {
-            echo "
-            <div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* is almost ready.')."</strong> ".sprintf(__('You must accept the License Agreement and <a href="%1$s">configure</a> it to work.'), "./options-general.php?page=highslide-4-wordpress-reloaded/functions.hs4wp.php")."</p></div>
-            ";
+           $msg_status = "<div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* is almost ready.')."</strong> ".sprintf(__('You must accept the License Agreement and <a href="%1$s">configure</a> it to work.'), "./options-general.php?page=highslide-4-wordpress-reloaded/functions.hs4wp.php")."</p></div>";
+           _e($msg_status);
         }
         // compatibility checks:
             // NextGen Effects:
             $TEMP = hs4wp_getConf('ngg_options');
             if($TEMP['thumbEffect'] && $TEMP['thumbEffect'] != "none") {
-                echo "
-                <div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* compatibility Warning!')."</strong><br/> ".sprintf(__('You are using NextGen Galley with enabled JS Image effects. With this settings Highslide won`t work in your site. Please go to the <a href="%1$s">NextGEN Config dialogue</a> and set JavaScript Thumbnail Effect to none.<br><br>If you using wordpress on a WP Multi site please first select the networksite using NextGEN and than turn of the NextGEN JS Effect for this site.'), "admin.php?page=nggallery-options#effects")."</p></div>
-                ";
+                $msg_status = "<div id='hs4wp-warning' class='updated fade'><p><strong>".__('Highslide 4 Wordpress *reloaded* compatibility Warning!')."</strong><br/> ".sprintf(__('You are using NextGen Galley with enabled JS Image effects. With this settings Highslide won`t work in your site. Please go to the <a href="%1$s">NextGEN Config dialogue</a> and set JavaScript Thumbnail Effect to none.<br><br>If you using wordpress on a WP Multi site please first select the networksite using NextGEN and than turn of the NextGEN JS Effect for this site.'), "admin.php?page=nggallery-options#effects")."</p></div>";
+                _e($msg_status);
             }
             unset($TEMP);
     }

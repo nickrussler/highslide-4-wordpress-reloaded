@@ -4,7 +4,7 @@ Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom, imagebox, expander
 Requires at least: 2.9
 Tested up to: 3.3.1
-Stable tag: 1.26
+Stable tag: 1.27
 
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
@@ -69,6 +69,10 @@ from cheap to expensive.   http://solariz.de/donate
 5. choose many styles or set your own in Advanced
 
 == Changelog ==
+
+= 1.27 =
+* Fixed a 1.26 introduced bug. Thanks for reporting: damjang, kazancexpert, yakos
+* Fixed a small possible PHP-Notice on first time installations
 
 = 1.26 =
 * Switched to YUI compressor 2.4.7
