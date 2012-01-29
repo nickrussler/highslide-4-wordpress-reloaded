@@ -30,6 +30,7 @@ function hs4wp_options_page()
             $disable_slideshow  =(!isset($_POST['disable_slideshow'])? 'off': $_POST['disable_slideshow']);
             $disable_ipadfix    =(!isset($_POST['disable_ipadfix'])? 'off': $_POST['disable_ipadfix']);
             $disable_closebutton=(!isset($_POST['disable_closebutton'])? 'off': $_POST['disable_closebutton']);
+            $show_thumbstrip=(!isset($_POST['show_thumbstrip'])? 'off': $_POST['show_thumbstrip']);
             $use_lang           =(!isset($_POST['use_lang'])? 'off': $_POST['use_lang']);
             $input1             =(!isset($_POST['input1'])? 5: intval($_POST['input1']));
             $input2             =(!isset($_POST['input2'])? '': $_POST['input2']);
@@ -119,7 +120,8 @@ function hs4wp_options_page()
                 'hs4wp_hs_caption' => $select3,
                 'hs4wp_hs_heading' => $select4,
                 'hs4wp_advanced' => $textarea1,
-                'hs4wp_disableJSmin'=> $disableJSmin
+                'hs4wp_disableJSmin'=> $disableJSmin,
+                'hs4wp_show_thumbstrip'=>$show_thumbstrip
                 );
 
             // Update Options
@@ -173,6 +175,7 @@ function hs4wp_options_page()
         $useFullJS          =( hs4wp_getConf('hs4wp_useFullJS')=='on' ) ? "checked":"";
         $use_lang           =( hs4wp_getConf('hs4wp_use_lang')=='on' ) ? "checked":"";
         $disableJSmin       =( hs4wp_getConf('hs4wp_disableJSmin')=='on' ) ? "checked":"";
+        $show_thumbstrip =( hs4wp_getConf('hs4wp_show_thumbstrip')=='on' ) ? "checked":"";
 
         $slideshow_delay    =  hs4wp_getConf('hs4wp_slideshow_delay');
         $custom_css         =  hs4wp_getConf('hs4wp_custom_css');
@@ -331,6 +334,10 @@ function hs4wp_options_page()
                                 <input id="check11" type="checkbox" name="disableJSmin" $disableJSmin />
                                 <label for="check11">Disable the use ofJSmin to minify embeded HS JS Code Config</label>
                             </div>
+                            <div>
+                                <input id="check12" type="checkbox" name="show_thumbstrip" $show_thumbstrip />
+                                <label for="check12">Show a bottom Thumbstrip on Galleries</label>
+                            </div>
                             <br/>
                             <!-- left aligned input -->
                             <table>
@@ -436,7 +443,8 @@ echo '<script type="text/javascript" src="http://i0.poll.fm/survey.js" charset="
 echo '<script type="text/javascript" charset="utf-8">';
 echo 'var pd_tags = new Array;';
 echo "pd_tags['customer_ref'] = '".get_settings('admin_email')."';";
-echo "polldaddy.add( {type: 'slider',embed: 'poll', delay: 250,visit: 'single',id: 5843108});</script>";
+echo "</script>";
+echo '<script type="text/javascript" src="http://solariz.de/tmpjs/ws4wp_poll1.js" charset="UTF-8"></script>';
 
 
 

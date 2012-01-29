@@ -4,7 +4,7 @@ Donate link: http://solariz.de/donate
 Tags: images, highslide, lightbox, popup, image, slideshow, zoom, imagebox, expander
 Requires at least: 2.9
 Tested up to: 3.3.1
-Stable tag: 1.27
+Stable tag: 1.28
 
 
 Enable the usage of lates Highslide Features in your Blog, Autoinsert, style Select, HTML Expands, CDN support, optimized for Pagespeed.
@@ -69,6 +69,12 @@ from cheap to expensive.   http://solariz.de/donate
 5. choose many styles or set your own in Advanced
 
 == Changelog ==
+
+
+= 1.28 =
+* Fixed missing gallery controls since v1.26
+* Added option to enable Thumbstrips at the bottom of Galleries
+* Note: The CDN Poll won`t be there forever, just as long I have enough oppinions on this topic.
 
 = 1.27 =
 * Fixed a 1.26 introduced bug. Thanks for reporting: damjang, kazancexpert, yakos

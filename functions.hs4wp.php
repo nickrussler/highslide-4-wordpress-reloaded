@@ -200,15 +200,26 @@ function hs4wp_prepare_footer() {
       $OUT .= hs4wp_getConf('hs4wp_advanced');
 	// Add the controlbar
     if($hs4wp_img_count > 1 && hs4wp_getConf('hs4wp_disable_slideshow') == false) {
-      //$OUT .= "if (hs.addSlideshow) hs.addSlideshow({\n";
-      $OUT .= "hs.addSlideshow({";
-      $OUT .= "slideshowGroup: 'group1',";
+      $OUT .= "if (hs.addSlideshow) hs.addSlideshow({\n";
+      //$OUT .= "hs.addSlideshow({";
+      //$OUT .= "slideshowGroup: 'group1',";
       $interval = intval(hs4wp_getConf('hs4wp_slideshow_delay')*1000);
       if($interval < 1000) $interval = 5000;
       $OUT .= "\tinterval: ".$interval.",\n";
       $OUT .= "\trepeat: false,\n";
       $OUT .= "\tuseControls: true,\n";
       $OUT .= "\tfixedControls: 'fit',\n";
+      // Bottom Thumbstrip
+      if( hs4wp_getConf('hs4wp_show_thumbstrip') == true ) {
+          $OUT .= "thumbstrip: {\n";
+          $OUT .= "position: 'bottom center',\n";
+          $OUT .= "mode: 'horizontal',\n";
+          $OUT .= "relativeTo: 'viewport'\n";
+          $OUT .= "},\n";
+      }
+
+
+
       $OUT .= "\toverlayOptions: {\n";
 
       if(hs4wp_getConf('hs4wp_align_center')=="on") {
@@ -263,9 +274,7 @@ function hs4wp_prepare_footer() {
         $OUT .= "};";
     }
     // Gallery Config Object
-    $OUT .= "var config1 = {\n";
-    $OUT .= "slideshowGroup: 'group1',\n";
-    $OUT .= "transitions: ['expand', 'crossfade']};\n";
+    $OUT .= "\n";
     $OUT .= "</script>\n";
     // JSMin minify config:
     if(hs4wp_getConf('hs4wp_disableJSmin') != true) {
